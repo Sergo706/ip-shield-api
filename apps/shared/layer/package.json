@@ -1,0 +1,10 @@
+{
+  "name": "@app/shared-layer",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "nuxt": "catalog:",
+    "@nuxt/ui": "catalog:",
+    "@riavzon/utils": "^1.1.6"
+  }
+}

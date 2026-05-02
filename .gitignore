@@ -6,6 +6,8 @@
 dist
 node_modules
 logs
+app-logs
+auth-logs
 *.log
 .DS_Store
 .fleet
@@ -13,3 +15,5 @@ logs
 .env
 .env.*
 !.env.example
+config.dev.json
+--port

@@ -1,48 +1,17 @@
 {
-  "name": "ip-shield-api",
+  "name": "ip-shield-api-workspace",
   "private": true,
-  "type": "module",
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "lint": "eslint .",
-    "typecheck": "nuxt typecheck"
+    "dev:static": "pnpm --filter @app/static dev",
+    "dev:core": "pnpm --filter @app/core dev",
+    "build:static": "pnpm --filter @app/static build",
+    "generate:static": "pnpm --filter @app/static generate",
+    "build:core": "pnpm --filter @app/core build",
+    "typecheck:static": "pnpm --filter @app/static typecheck",
+    "typecheck:core": "pnpm --filter @app/core typecheck",
+    "lint:static": "pnpm --filter @app/static lint",
+    "lint:core": "pnpm --filter @app/core lint",
+    "dev:both": "pnpm --filter @app/static --filter @app/core dev"
   },
-  "dependencies": {
-    "@iconify-json/lucide": "1.2.104",
-    "@iconify-json/simple-icons": "1.2.80",
-    "@nuxt/fonts": "0.14.0",
-    "@nuxt/image": "2.0.0",
-    "@nuxt/ui": "4.7.0",
-    "@nuxtjs/seo": "5.1.3",
-    "@riavzon/auth-h3client": "^2.0.0",
-    "@riavzon/shield-base": "^2.0.6",
-    "@riavzon/utils": "^1.1.6",
-    "@takumi-rs/core": "1.1.2",
-    "better-sqlite3": "12.9.0",
-    "drizzle-orm": "0.45.2",
-    "mysql2": "3.22.3",
-    "nuxt": "4.4.2",
-    "tailwindcss": "4.2.4",
-    "zod": "4.4.1"
-  },
-  "devDependencies": {
-    "@nuxt/hints": "1.0.3",
-    "nuxt-feedme": "2.1.0",
-    "nuxt-llms": "0.2.0",
-    "@nuxt/eslint": "1.15.2",
-    "drizzle-kit": "0.31.10",
-    "eslint": "10.2.1",
-    "eslint-plugin-vue": "10.9.0",
-    "tsx": "4.21.0",
-    "typescript": "6.0.3",
-    "typescript-eslint": "8.59.1",
-    "vue-tsc": "3.2.7"
-  },
-  "packageManager": "pnpm@10.33.2",
-  "engines": {
-    "node": ">=22.12.0 <23"
-  }
+  "packageManager": "pnpm@10.30.3"
 }

@@ -145,12 +145,39 @@ that instead of rebuilding solved problems in parallel services.
   tracing.
 - Use `app/pages` and Nuxt UI for marketing, pricing, docs, login, dashboard,
   and account flows.
-- Use `@nuxt/content` for product docs, API guides, changelog, and status
-  notes.
+- Use `@nuxt/content` for docs and changelog content only when Git-based
+  publishing and a content deployment step are acceptable.
 - Use `@nuxtjs/seo`, `nuxt-feedme`, and `nuxt-llms` for search, feeds, and
   machine-readable docs without extra infrastructure.
 - Use Nitro storage and cached handlers where short-lived caching reduces
   repeat read pressure on the database and artifacts.
+
+## Content publishing strategy
+
+Nuxt Content and Nuxt Studio solve authoring well, but they do not eliminate
+the publish boundary. In a standard Nuxt Content setup, content is imported,
+parsed, and written into a generated content database dump that is then served
+by the deployed app. That means content changes are still part of a publish or
+deployment workflow rather than true live runtime mutations of the running
+server.
+
+Nuxt Studio is therefore a good fit for Git-based docs, blog posts, changelog
+entries, and marketing content when a controlled publish step is acceptable. It
+is not the right core strategy if the hard requirement is to change copy on a
+live VPS without rebuilding or rolling out a new app artifact.
+
+For this project, the safer production approach is one of these two models.
+
+| Model | Editing experience | Impact on API and dashboard |
+| --- | --- | --- |
+| Separate docs or marketing deployment using Nuxt Content and optionally Nuxt Studio | Excellent editor workflow with preview and Git history | No impact on the main API and dashboard deployment because content lives on a separate app or subdomain |
+| Runtime-managed content stored outside Nuxt Content, such as a database-backed admin or headless CMS | True live edits without rebuilding the app | No redeploy required for content changes, but requires a separate content model and runtime fetch path |
+
+The recommended default for IP Shield API is to keep the API and customer
+dashboard stable in the main app, then either move docs and blog content to a
+separate Nuxt surface or store frequently edited marketing copy in a runtime
+database table or external CMS. Use Nuxt Studio only where a Git-based publish
+workflow is acceptable.
 
 ## Authentication and account model
 
@@ -346,6 +373,13 @@ small cluster is enough for the first meaningful release.
 Caddy must be the only public entrypoint. Keep the auth service and MySQL on a
 private Docker network, and let Nuxt talk to auth over internal DNS. Persist
 dataset artifacts and database data on named volumes or mounted disks.
+
+If the same Nuxt app is ever redeployed in production, use a blue-green or
+rolling container swap behind Caddy so a new container becomes healthy before
+the old one is removed. That avoids user-visible downtime during normal app
+releases, but it still does not change the fact that file-based content updates
+remain publish-time changes unless content is split into a separate deployment
+or moved to a runtime-managed store.
 
 ## Local development workflow
 

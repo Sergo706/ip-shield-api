@@ -1,0 +1,110 @@
+services:
+  auth:
+    image: sergio68/auth
+    read_only: true  
+    restart: unless-stopped
+    cap_drop: ["ALL"]
+    user: 10001:10001
+    environment:
+      - SKIP_CONFIG_UNLINK=true
+    volumes: 
+      - ./auth-logs/server:/app/auth-logs:rw
+      - ./auth-logs/server/bot-detector:/app/bot-detector-logs:rw
+      - bot-detector-data:/app/node_modules/@riavzon/bot-detector/dist/_data-sources:rw
+      - email-data:/app/dist/email-db:rw
+      - ./config.dev.json:/run/app/config.json
+    tmpfs:
+      - /run/app:rw,noexec,nosuid,nodev,uid=10001,gid=10001,size=1m
+    pids_limit: 200
+    depends_on:
+      mysql:
+        condition: service_healthy
+    # secrets:
+    #   - age_key
+    #   - encrypted_config
+    security_opt:
+      - "no-new-privileges:true"
+    ports:
+     - 10000:10000
+    networks:
+      frontend:
+        ipv4_address: 173.21.10.4
+      # egress: 
+      #   ipv4_address: 172.22.20.2
+  mysql: 
+    image: mysql:latest
+    restart: unless-stopped
+    cap_drop: ["ALL"]
+    user: "999:999"
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234567890
+      - MYSQL_USER=sergio
+      - MYSQL_PASSWORD=1234567890
+      - MYSQL_DATABASE=ip_shield 
+    security_opt: 
+      - "no-new-privileges:true"
+    volumes:
+      - sql_db_ip_shield:/var/lib/mysql
+      - ./secrets/mysql:/etc/mysql/conf.d:ro 
+    healthcheck:
+      test: ["CMD-SHELL", "bash -lc 'exec 3<>/dev/tcp/127.0.0.1/3306'"]
+      interval: 10s
+      timeout: 8s 
+      retries: 5
+      start_period: 7m
+    tmpfs:
+      - /tmp/secrets-dec:rw,noexec,nosuid,nodev,size=2m,uid=999,gid=999,mode=0700     
+    # secrets:
+    #   - mysql_root_password
+    #   - mysql_user_password  
+    #   - mysql_user_name
+    #   - mysql_db_name
+    #   - age_key_app
+    ports: 
+      - 3310:3306
+    networks:
+      frontend:
+        ipv4_address: 173.21.10.3   
+
+# secrets:
+#   age_key:
+#     file: ./secrets/auth/age_key
+#   encrypted_config:
+#     file: ./secrets/auth/config.json.age
+#   mysql_root_password:
+#     file: ./secrets/app/mysql/mysql_root_password.txt.age
+#   mysql_user_password:
+#     file: ./secrets/app/mysql/mysql_user_password.txt.age
+#   mysql_user_name:
+#     file: ./secrets/app/mysql/mysql_user_name.txt.age 
+#   mysql_db_name:
+#     file: ./secrets/app/mysql/mysql_db_name.txt.age
+#   age_key_app:
+#     file: ./age_key_app
+volumes:
+  sql_db_ip_shield:  
+  app_data:
+  bot-detector-data:
+  email-data:
+networks: 
+  backend: 
+    internal: true
+    enable_ipv6: false
+    ipam:
+      config:
+        - subnet: 173.20.0.0/16
+          ip_range: 173.20.5.0/24
+          gateway: 173.20.5.1
+  frontend:
+    enable_ipv6: false
+    ipam:
+      config:
+        - subnet: 173.21.10.0/24
+          gateway: 173.21.10.1
+  egress:
+    internal: false
+    enable_ipv6: false
+    ipam:
+      config:
+        - subnet: 173.22.20.0/24
+          gateway: 173.22.20.1
