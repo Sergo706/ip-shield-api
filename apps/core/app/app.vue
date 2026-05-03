@@ -9,62 +9,57 @@ useHead({
   htmlAttrs: {
     lang: 'en'
   }
-})
+});
 
-const title = 'Nuxt Starter Template'
-const description = 'A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours.'
+const config = useAppConfig();
+const route = useRoute();
+const title = computed(() => `${String(config.appName)} ${route.path.startsWith('/login') ? 'Login' : route.path.startsWith('/signup') ? 'Signup' : 'Authentication'}`);
 
 useSeoMeta({
   title,
-  description,
+  description: String(config.seo.description),
   ogTitle: title,
-  ogDescription: description,
+  ogDescription: String(config.seo.description),
   ogImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
   twitterCard: 'summary_large_image'
-})
+});
 </script>
 
 <template>
   <UApp>
-    <UHeader>
-      <template #left>
-        <NuxtLink to="/">
-          <AppLogo class="w-auto h-6 shrink-0" />
-        </NuxtLink>
-
-        <TemplateMenu />
-      </template>
-
-      <template #right>
-        <UColorModeButton />
-
-        <UButton
-          to="https://github.com/nuxt-ui-templates/starter"
-          target="_blank"
-          icon="i-simple-icons-github"
-          aria-label="GitHub"
-          color="neutral"
-          variant="ghost"
-        />
-      </template>
-    </UHeader>
-
-    <UMain>
+    <NuxtLoadingIndicator />
+    <NuxtRouteAnnouncer />
+    <NuxtLayout>
       <NuxtPage />
-    </UMain>
+    </NuxtLayout>
 
-    <USeparator icon="i-simple-icons-nuxtdotjs" />
+    
+    <USeparator
+      :avatar="{
+        src: '/favicon.svg',
+        alt: 'Logo',
+        loading: 'lazy',
+      }"
+      color="neutral"
+      decorative
+    />
 
     <UFooter>
       <template #left>
         <p class="text-sm text-muted">
-          Built with Nuxt UI • © {{ new Date().getFullYear() }}
+          All Right reserved 
+          <NuxtLink
+            to="https://riavzon.com"
+            target="_blank"
+          >
+            Riavzon
+          </NuxtLink> • © {{ new Date().getFullYear() }}
         </p>
       </template>
 
       <template #right>
         <UButton
-          to="https://github.com/nuxt-ui-templates/starter"
+          to="https://github.com/Sergo706"
           target="_blank"
           icon="i-simple-icons-github"
           aria-label="GitHub"
