@@ -13,12 +13,6 @@
     </template>
   </UHeader>
   <UMain>
-    <UContainer class="max-w-full">
-      <UPage
-        as="section"
-      >
-        <slot />
-      </UPage>
-    </UContainer>
+      <slot />
   </UMain>
 </template>

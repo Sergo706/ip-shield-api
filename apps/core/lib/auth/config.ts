@@ -51,7 +51,7 @@ export const authConfig: Omit<AuthConfiguration, 'uStorage'> = {
         allowedMimes: ['image/png', 'image/jpeg', 'image/webp'],
         allowedExtensions: ['.png', '.jpg', '.jpeg', '.webp'],
     },
-    onSuccessRedirect: `http://${domain}`,
+    onSuccessRedirect: `http://${domain}:3001/dashboard`,
     OAuthProviders: [{
         kind: 'oidc',
         name: 'google',
@@ -64,9 +64,9 @@ export const authConfig: Omit<AuthConfiguration, 'uStorage'> = {
             prompt: "consent",
             include_granted_scopes: "true"
         },
-        redirectUri: `http://${domain}/oauth/callback/google`,
+        redirectUri: `http://${domain}:3001/oauth/callback/google`,
         supportPKCE: true,
-        redirectUrlOnSuccess: `http://${domain}`,
+        redirectUrlOnSuccess: `http://${domain}:3001/dashboard`,
         redirectUrlOnError: `http://${domain}/`
     },
     {
@@ -78,11 +78,11 @@ export const authConfig: Omit<AuthConfiguration, 'uStorage'> = {
        emailCallBack: githubEmailCallBack,
        clientId: env.OAUTH_GITHUB_CLIENT_ID,
        clientSecret: env.OAUTH_GITHUB_CLIENT_SECRET,
-       redirectUri: `https://${domain}/oauth/callback/github`,
+       redirectUri: `https://${domain}:3001/oauth/callback/github`,
        defaultScopes: ['read:user', 'user:email'],
        supportPKCE: true,
-       redirectUrlOnSuccess: `https://${domain}`,
-       redirectUrlOnError: `https://${domain}/`
+       redirectUrlOnSuccess: `https://${domain}:3001/dashboard`,
+       redirectUrlOnError: `http://${domain}/`
     }
 ],
     magicLinkRedirectPath: '/',

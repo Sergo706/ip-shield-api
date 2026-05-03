@@ -12,7 +12,6 @@ export default defineNuxtConfig({
       path: '/api/auth/api-tokens'
     }
   },
-
   devtools: {
     enabled: true
   },
