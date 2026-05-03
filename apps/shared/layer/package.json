@@ -2,9 +2,13 @@
   "name": "@app/shared-layer",
   "private": true,
   "type": "module",
+  "scripts": {
+    "prepare": "nuxt prepare"
+  },
   "dependencies": {
     "nuxt": "catalog:",
     "@nuxt/ui": "catalog:",
-    "@riavzon/utils": "^1.1.6"
+    "@riavzon/utils": "^1.1.6",
+    "zod": "catalog:"
   }
 }

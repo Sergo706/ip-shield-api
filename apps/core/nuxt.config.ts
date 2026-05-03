@@ -6,6 +6,12 @@ export default defineNuxtConfig({
     '@nuxt/hints',
     '@nuxt/image',
   ],
+  authH3Client: {
+    enableMiddleware: false,
+    registerApiRoute: {
+      path: '/api/auth/api-tokens'
+    }
+  },
 
   devtools: {
     enabled: true
