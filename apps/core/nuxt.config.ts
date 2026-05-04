@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     '@riavzon/auth-h3client/module',
     '@nuxt/hints',
     '@nuxt/image',
+    '@nuxtjs/mdc',
   ],
   authH3Client: {
     enableMiddleware: false,
