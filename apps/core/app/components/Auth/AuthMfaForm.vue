@@ -3,7 +3,6 @@ import { codeForm as schema } from '#layers/shared-layer/shared/types/PasswordRe
 import {type ResponseFromServiceLogin } from '#layers/shared-layer/shared/types/LoginServerTypes';
 import type { VerificationLinkSchema } from '#layers/shared-layer/shared/types/VerificationLinkSchema';
 import { executeRequest } from '@riavzon/auth-h3client/client';
-import { useZodValidator } from '#layers/shared-layer/app/composables/useZodValidator';
 
 
 type Props = VerificationLinkSchema & {
@@ -13,86 +12,107 @@ type Props = VerificationLinkSchema & {
 const props = withDefaults(defineProps<Props>(), {
     codeLength: 7,
 });
+const width = useScreenWidth();
 
-const code = ref<string[]>(Array.from({ length: props.codeLength }, () => ''));
 const success = ref<boolean>(false);
-const successUrl = ref<string | URL>('');
-const errors = ref<string | object | undefined>('');
+const errors = ref<string>('');
 
+const state = reactive({
+  code: '',
+});
 
-const handleSubmit = async () => {
-    const fullCode =  {code: code.value.join('')};
-    errors.value = '';
+const codeModel = computed({
+  get: () => state.code ? state.code.split('') : [],
+  set: (value) => {
+    state.code = value.join('');
+  }
+});
 
-    if (fullCode.code.length !== props.codeLength) {
-        errors.value = 'Invalid or expired code';
-    }
-    const results = useZodValidator(schema, fullCode);
+const submit = async () => {
+    try {
+      const headers = useRequestHeaders();
+      const event = useRequestEvent();
+      const fetcher = useRequestFetch();
+      const toast = useToast();
 
-    if (!results.success) {
-          const zodErrors = results.errors as Record<string, string>;
-          errors.value = zodErrors.code ?? 'Invalid code format';
-          return;
-    }
-      const dataToSend = results.data;
-
-    if (!dataToSend) {
-          errors.value = 'Something went wrong.';
-          return;
+      if (!state.code) {
+            errors.value = `Please enter a valid code`;
+            return;
       }
 
-  
-    try {
-    const headers = useRequestHeaders();
-    const event = useRequestEvent();
-    const fetcher = useRequestFetch();
+      const res = await executeRequest<ResponseFromServiceLogin>(`/api/auth/verify-mfa`, 'POST', state, {}, {
+        query: { ...props},
+      }, { headers, event, fetcher });
 
-    const res = await executeRequest<ResponseFromServiceLogin>(`/api/auth/verify-mfa`, 'POST', dataToSend, {}, {
-      query: { ...props},
-    }, { headers, event, fetcher });
-
-    
-
-    if (!res.ok) {
-          errors.value = `Something went wrong. ${res.reason}`;
-          return;
-    }
+      if (!res.ok) {
+            errors.value = `Invalid or expired code`;
+            return;
+      }
     
      if ("redirectTo" in res.data) {
         success.value = true;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        successUrl.value = res.data.redirectTo ?? '/';
+        toast.add({
+          color: 'success',
+          title: 'Success!',
+          description: 'Your code successfully verified. redirecting to account...'
+        });
+        await navigateTo(res.data.redirectTo, { external: true });
         return;
     } else {
         errors.value = 'Invalid or expired code';
         return;
     }
     } catch {
-        errors.value = 'An unexpected error occurred.';
+        errors.value = 'Server error. Please try again later';
     }
   
 };
 </script>
 
 <template>
-  <form 
-    v-if="!success"
-    class="absolute-center top-[20%]"
-    @submit.prevent="handleSubmit"
-  >
-    <div class="flex flex-col items-center gap-4">
-      <p>Enter your secret code</p>
-
-      <small class="text-error">
-        {{ errors }}
-      </small>
-      <BaseButton
-        :primary="true"
-        :show-arrow="true"
+  <div class="mx-auto flex w-full justify-center py-4">
+    <UForm
+      :schema="schema"
+      :state="state"
+      :validate-on="[]"
+      :loading-auto="true"
+      class="flex flex-col justify-center items-center m-auto gap-4 p-4"
+      @submit="submit"
+    >
+      <UPinInput
+        v-model="codeModel"
+        otp
+        placeholder="○"
+        :length="7"
+        color="neutral"
+        variant="outline"
+        highlight
+        :ui="{
+          base: `${width.width.value < 342 ? 'size-8' : 'size-9'}`
+        }"
+        autofocus
+        mask
+      />
+      <UButton
         type="submit"
+        color="primary"
+        variant="subtle"
+        loading-auto
+        size="md"
+        class="px-6 cursor-pointer self-start ml-auto mr-auto w-full justify-center"
       >
-        Verify Code
-      </BaseButton> 
-    </div>
-  </form>
+        Submit
+      </UButton>
+
+      <UAlert 
+        v-if="errors"
+        class="w-full"
+        icon="i-lucide-circle-alert"
+        color="error"
+        title="Error!"
+        :description="errors"
+        variant="subtle"
+      />
+    </UForm>
+  </div>
 </template>

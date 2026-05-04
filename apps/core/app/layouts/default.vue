@@ -13,6 +13,6 @@
     </template>
   </UHeader>
   <UMain>
-      <slot />
+    <slot />
   </UMain>
 </template>
