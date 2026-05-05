@@ -10,7 +10,7 @@ export const loginSchema = z.object({
 });
 
 
-export const signUpSchema = z.strictObject({
+export const personalSchema = z.object({
     firstname: z.string('This field is required')
     .min(2,'Min of 2 characters')
     .max(72,'Max of 72 characters')
@@ -21,9 +21,13 @@ export const signUpSchema = z.strictObject({
     .max(72,'Max of 72 characters')
     .regex(/^[A-Za-z]+(?:\s+[A-Za-z]+)*$/, 'Your name can contain only letters'),
 
-    email: z.string("Please enter a valid email").min(10).max(80).regex(/^(?!\.)(?!.*\.\.)[A-Za-z0-9_'-.]+[A-Za-z0-9_-]@[A-Za-z][A-Za-z-]*(?:\.[A-Za-z]{1,4}){1,3}$/)
-    .transform(s => s.toLowerCase()),
-     
+});
+
+export const signUpSchema = z.strictObject({
+    ...personalSchema.shape,
+
+    email: z.string("Please enter a valid email").min(10).max(80).regex(/^(?!\.)(?!.*\.\.)[A-Za-z0-9_'-.]+[A-Za-z0-9_-]@[A-Za-z][A-Za-z-]*(?:\.[A-Za-z]{1,4}){1,3}$/),
+
     password: z.string()
     .min(12, 'Min of 12 characters')
     .max(64,'Max of 64 characters')

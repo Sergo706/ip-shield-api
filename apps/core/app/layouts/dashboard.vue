@@ -50,9 +50,9 @@ const links = [[{
   }
 }, 
 {
-  label: 'Billing',
+  label: 'Plans',
   icon: 'i-lucide-credit-card',
-  to: '/billing',
+  to: '/dashboard/plans',
   badge: props.badge,
   onSelect: () => {
     open.value = false;
@@ -60,26 +60,10 @@ const links = [[{
 },
  {
   label: 'Settings',
-  to: '/settings',
+  to: '/dashboard/settings',
   icon: 'i-lucide-settings',
   defaultOpen: true,
   type: 'trigger',
-  children: [{
-    label: 'General',
-    to: '/settings',
-    exact: true,
-    onSelect: () => {
-      open.value = false;
-    }
-  }, 
-  {
-    label: 'Security',
-    to: '/settings/security',
-    onSelect: () => {
-      open.value = false;
-    }
-  }
-]
 }], 
 [{
   label: 'Documentation',
