@@ -9,7 +9,7 @@ const colorMode = useColorMode();
 
   
 const props = withDefaults(defineProps<{
-    badge: number | string;
+    badge: number | string | undefined;
     user?: {
         avatar?: string;
         name?: string

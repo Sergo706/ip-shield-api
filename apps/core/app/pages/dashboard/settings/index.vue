@@ -3,11 +3,28 @@
 import { personalSchema } from '~~/shared/types/auth';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import z from 'zod';
+import AuthApiModal from '~/components/Auth/AuthApiModal.vue';
+
 
 // await useAuthRedirect('/', undefined);
 definePageMeta({
   layout: 'dashboard'
 });
+
+
+const onCreate = async () => {
+    const overlay = useOverlay();
+    const modal = overlay.create(AuthApiModal);
+    const instance = modal.open({
+        title: 'Create API Token',
+        msg: `Fill the form below to create a new token`,
+        action: 'create',
+
+    });
+   await instance.result;
+   return;
+};
+
 const toast = useToast();
 
 type PersonalSchema = z.output<typeof personalSchema>
@@ -64,6 +81,7 @@ async function initEmailChange() {
             color="primary"
             size="sm"
             trailing-icon="lucide:plus"
+            @click.prevent="onCreate"
           />
         </template>
       </UDashboardNavbar>

@@ -2,8 +2,21 @@
 <script setup lang="ts">
 import { useAuthRedirect } from '~/composables/useAuthRedirect';
 import z from 'zod';
+import AuthApiModal from '~/components/Auth/AuthApiModal.vue';
 
 const ipv = z.ipv4(); // validate
+
+const onCreate = async () => {
+    const overlay = useOverlay();
+    const modal = overlay.create(AuthApiModal);
+    const instance = modal.open({
+        title: 'Create API Token',
+        msg: `Fill the form below to create a new token`,
+        action: 'create',
+    });
+   await instance.result;
+   return;
+};
 
 // await useAuthRedirect('/', undefined);
 definePageMeta({
@@ -38,6 +51,7 @@ const errors = ref(undefined);
             color="primary"
             size="sm"
             trailing-icon="lucide:plus"
+            @click.prevent="onCreate"
           />
         </template>
       </UDashboardNavbar>

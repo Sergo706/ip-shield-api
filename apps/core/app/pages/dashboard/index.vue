@@ -3,11 +3,25 @@
 import { useAuthRedirect } from '~/composables/useAuthRedirect';
 import type { Period, Range } from '#layers/shared-layer/shared/types/TimePeriod';
 import { sub } from 'date-fns';
+import AuthApiModal from '~/components/Auth/AuthApiModal.vue';
+
 // await useAuthRedirect('/', undefined);
 
 definePageMeta({
     layout: 'dashboard'
 });
+
+const onCreate = async () => {
+    const overlay = useOverlay();
+    const modal = overlay.create(AuthApiModal);
+    const instance = modal.open({
+        title: 'Create API Token',
+        msg: `Fill the form below to create a new token`,
+        action: 'create',
+    });
+   await instance.result;
+   return;
+};
 
 const range = shallowRef<Range>({
   start: sub(new Date(), { days: 14 }),
@@ -91,6 +105,7 @@ const data = ref([
             color="primary"
             size="sm"
             trailing-icon="lucide:plus"
+            @click.prevent="onCreate"
           />
         </template>
       </UDashboardNavbar>
@@ -129,7 +144,8 @@ const data = ref([
               label: 'Create token',
               class: 'cursor-pointer',
               variant: 'subtle',
-              color: 'primary'
+              color: 'primary',
+              onClick: () => onCreate()
             },
             {
               icon: 'i-lucide-flask-conical',

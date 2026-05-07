@@ -4,6 +4,7 @@ import { h, resolveComponent } from 'vue';
 import type { TableColumn } from '@nuxt/ui';
 import { DateFormatter } from '@internationalized/date';
 import { upperFirst } from 'scule';
+import AuthApiModal from '~/components/Auth/AuthApiModal.vue';
 
 // TODO: // CRUD Actions
 const UButton = resolveComponent('UButton');
@@ -170,16 +171,16 @@ const columns: TableColumn<HomeTokenList>[] = [
         td: 'text-right'
       }
     },
-    cell: () => {
+    cell: ({ row }) => {
       return h(
         UDropdownMenu,
         {
           content: {
             align: 'end'
           },
-          items: getRowItems(),
+          items: getRowItems(row.getValue<number>('id')),
           'aria-label': 'Actions dropdown'
-        },  
+        },
         () =>
           h(UButton, {
             icon: 'i-lucide-ellipsis-vertical',
@@ -193,7 +194,7 @@ const columns: TableColumn<HomeTokenList>[] = [
 ];
 
 
-function getRowItems() {
+function getRowItems(tokenId: number) {
   return [
     {
       type: 'label',
@@ -204,14 +205,38 @@ function getRowItems() {
     },
     {
       label: 'Rotate Token',
-      onSelect() {
-        // TODO
+      async onSelect() {
+        const overlay = useOverlay();
+        const modal = overlay.create(AuthApiModal);
+        const instance = modal.open({
+          title: 'Token Rotation',
+          msg: `You sure you want to proceed? the old couldn't be used after this point, and the new one will have the settings the old want did.`,
+          action: 'rotate',
+          tokenId
+        });
+
+        if ((await instance.result) === true) {
+          // TODO
+          return;
+        }
+
+        return;
       }
     },
     {
       label: 'Set new Ip restrictions',
-      onSelect() {
-        // TODO
+      async onSelect() {
+        const overlay = useOverlay();
+        const modal = overlay.create(AuthApiModal);
+        const instance = modal.open({
+          title: 'Set new Ip restrictions',
+          msg: 'Update the hosts allowed to use this token',
+          action: 'ip-restriction',
+          tokenId
+        });
+
+       await instance.result;
+       return;
       }
     },
     {
@@ -220,8 +245,21 @@ function getRowItems() {
     {
       label: 'Revoke Token',
       color: 'error',
-      onSelect() {
-        // TODO
+      async onSelect() {
+        const overlay = useOverlay();
+        const modal = overlay.create(AuthApiModal);
+        const instance = modal.open({
+          title: 'Revoke Token',
+          msg: `You sure you want to proceed? the old token couldn't be used after this point.`,
+          action: 'revoke',
+          tokenId
+        });
+
+        if ((await instance.result) === true) {
+          // TODO
+          return;
+        }
+        return;
       }
     },
 
@@ -258,8 +296,8 @@ const name = computed({
       :items="
         table?.tableApi
           ?.getAllColumns()
-          .filter((column) => column.getCanHide())
-          .map((column) => ({
+          .filter((column: any) => column.getCanHide())
+          .map((column: any) => ({
             label: upperFirst(column.id),
             type: 'checkbox' as const,
             checked: column.getIsVisible(),

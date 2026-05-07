@@ -1,6 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { useAuthRedirect } from '~/composables/useAuthRedirect';
+import AuthApiModal from '~/components/Auth/AuthApiModal.vue';
+
 // await useAuthRedirect('/', undefined);
 definePageMeta({
     layout: 'dashboard'
@@ -67,6 +69,18 @@ const data = ref([
   }
 ]);
 
+const onCreate = async () => {
+    const overlay = useOverlay();
+    const modal = overlay.create(AuthApiModal);
+    const instance = modal.open({
+        title: 'Create API Token',
+        msg: `Fill the form below to create a new token`,
+        action: 'create',
+    });
+   await instance.result;
+   return;
+};
+
 </script>
 
 <template>
@@ -84,6 +98,7 @@ const data = ref([
             color="primary"
             size="sm"
             trailing-icon="lucide:plus"
+            @click.prevent="onCreate"
           />
         </template>
       </UDashboardNavbar>
@@ -110,7 +125,8 @@ const data = ref([
               label: 'Create token',
               class: 'cursor-pointer',
               variant: 'subtle',
-              color: 'primary'
+              color: 'primary',
+              onClick: () => onCreate()
             },
             {
               icon: 'i-lucide-flask-conical',

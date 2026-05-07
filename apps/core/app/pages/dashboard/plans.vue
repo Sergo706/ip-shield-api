@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { useAuthRedirect } from '~/composables/useAuthRedirect';
 import type { PricingTableTier, PricingTableSection } from '@nuxt/ui';
+import AuthApiModal from '~/components/Auth/AuthApiModal.vue';
 
 
 // await useAuthRedirect('/', undefined);
@@ -9,6 +10,17 @@ definePageMeta({
     layout: 'dashboard'
 });
 
+const onCreate = async () => {
+    const overlay = useOverlay();
+    const modal = overlay.create(AuthApiModal);
+    const instance = modal.open({
+        title: 'Create API Token',
+        msg: `Fill the form below to create a new token`,
+        action: 'create',
+    });
+   await instance.result;
+   return;
+};
 
 // TODO: Fetch data from db
 const tiers = ref<PricingTableTier[]>([
@@ -113,6 +125,7 @@ const sections = ref<PricingTableSection[]>([
             color="primary"
             size="sm"
             trailing-icon="lucide:plus"
+            @click.prevent="onCreate"
           />
         </template>
       </UDashboardNavbar>
