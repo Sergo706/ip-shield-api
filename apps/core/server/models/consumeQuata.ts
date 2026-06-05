@@ -34,8 +34,8 @@ export async function consumeQuota(
           )`,
         },
       });
-      console.log(results.affectedRows, results)
-    return results.insertId > 0 || results.affectedRows === 2;
+
+      return results.insertId > 0 || results.affectedRows === 2;
   } catch (err) {
     log.error({ err, userId, period }, "Failed to consume quota");
     return false;

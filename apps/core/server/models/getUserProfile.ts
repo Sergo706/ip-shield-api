@@ -8,7 +8,7 @@ import { PinoLogger } from '~~/shared/types/PinoLogger';
 
 export async function getUserProfile(userId: number, log: PinoLogger): Promise<Results<UserProfile>> {
     try {
-        const [data] = await dbPool.select({name: usersTable.name, avatar: usersTable.avatar}).from(usersTable).where(eq(usersTable.id, userId));
+        const [data] = await dbPool.select({name: usersTable.name, lastName: usersTable.lastName, avatar: usersTable.avatar}).from(usersTable).where(eq(usersTable.id, userId));
         if (!data) {
             return {
                 ok: false,

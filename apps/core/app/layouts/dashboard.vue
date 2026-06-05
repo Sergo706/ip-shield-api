@@ -1,7 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui';
+import { useGetAvatar } from '~/composables/useGetAvatar';
 
+const { data } = useGetAvatar();
 
 const open = ref(false);
 const colorMode = useColorMode();
@@ -9,18 +11,12 @@ const toast = useToast();
   
 const props = withDefaults(defineProps<{
     badge?: number | string | undefined;
-    user?: {
-        avatar?: string;
-        name?: string
-    }
 }>(), {
-  user: () => ({
-    badge: undefined,
-    avatar: 'https://github.com/benjamincanac.png',
-    name: 'John Doe'
-  })
+    badge: undefined
 });
 
+const userName = computed(() => (data.value?.name || data.value?.lastName) ? `${data.value.name} ${data.value.lastName}` : 'User');
+const userAvatar = computed(() => data.value?.avatar ?? undefined);
 
 
 const links = [[{
@@ -212,10 +208,10 @@ const items = computed<DropdownMenuItem[][]>(() => [
           <UButton
             v-bind="{
               avatar: {
-                src: props.user.avatar,
-                alt: props.user.name
+                src: userAvatar,
+                alt: userName
               },
-              label: collapsed ? undefined : props.user.name,
+              label: collapsed ? undefined : userName,
               trailingIcon: collapsed ? undefined : 'i-lucide-chevrons-up-down'
             }"
             color="neutral"

@@ -66,6 +66,7 @@ export function useSettings(ops: Ops = {}) {
                 duration: 10000,
                 description: result.data
             });
+            await refreshNuxtData('avatar');
         } finally {
             loading.value = false;
         }

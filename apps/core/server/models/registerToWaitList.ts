@@ -1,42 +1,64 @@
 import { Results } from "@riavzon/utils";
 import { earlyAccessBenefits, plans } from "~~/lib/db";
 import { dbPool } from "~~/lib/db/connection";
-import { sql, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { PinoLogger } from "~~/shared/types/PinoLogger";
 
 export async function register(userId: number, planId: number, log: PinoLogger): Promise<Results<string>> {
     try {
 
-        await dbPool.insert(earlyAccessBenefits).select(
-        dbPool.select({
-            id: sql<number | null>`NULL`.as('id'),
-            userId: sql<number>`${userId}`.as('userId'),
-            planId: plans.id,
-            requestsPerMinute: plans.requestsPerMinute,
-            monthlyQuota: plans.monthlyQuota
-        })
-        .from(plans)
-        .where(eq(plans.id, planId))
-        );
+        const [existing] = await dbPool.select().from(earlyAccessBenefits).where(eq(earlyAccessBenefits.userId, userId));
 
-        return {
-            ok: true,
-            date: new Date().toISOString(),
-            data: "Your successfully registered as an early adopter!"
-        };
-    } catch (err) {
-        const errStr = typeof err === 'string' ? err : JSON.stringify(err, Object.getOwnPropertyNames(err));
-        
-        const isDuplicate = errStr.includes('Duplicate entry') || errStr.includes('ER_DUP_ENTRY');
+        if (existing) {
+            if (existing.planId === planId) {
+                await dbPool.delete(earlyAccessBenefits).where(eq(earlyAccessBenefits.userId, userId));
+                return {
+                    ok: true,
+                    date: new Date().toISOString(),
+                    data: "Successfully unsubscribed from early access."
+                };
+            } else {
+                const [newPlan] = await dbPool.select().from(plans).where(eq(plans.id, planId));
+                if (!newPlan) {
+                    return { 
+                        ok: false,
+                        date: new Date().toISOString(),
+                        reason: "Plan not found" 
+                    };
+                }
+                await dbPool.update(earlyAccessBenefits)
+                    .set({
+                        planId: newPlan.id,
+                        requestsPerMinute: newPlan.requestsPerMinute,
+                        monthlyQuota: newPlan.monthlyQuota
+                    })
+                    .where(eq(earlyAccessBenefits.userId, userId));
 
-        if (isDuplicate) {
+                return {
+                    ok: true,
+                    date: new Date().toISOString(),
+                    data: "Successfully changed your early access plan!"
+                };
+            }
+        } else {
+            const [newPlan] = await dbPool.select().from(plans).where(eq(plans.id, planId));
+            if (!newPlan) {
+                return { ok: false, date: new Date().toISOString(), reason: "Plan not found" };
+            }
+            await dbPool.insert(earlyAccessBenefits).values({
+                userId,
+                planId: newPlan.id,
+                requestsPerMinute: newPlan.requestsPerMinute,
+                monthlyQuota: newPlan.monthlyQuota
+            });
             return {
-                ok: true, 
+                ok: true,
                 date: new Date().toISOString(),
-                data: "You are already registered for early access!"
+                data: "Successfully registered as an early adopter!"
             };
         }
 
+    } catch (err) {
         log.error({err}, 'Error in register wait list');
         return {
             ok: false,

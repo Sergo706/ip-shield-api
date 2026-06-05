@@ -7,7 +7,7 @@ definePageMeta({
     layout: 'dashboard'
 });
 
-const {updateNames, initEmailUpdate, name, lastname, loading } = useSettings();
+const {updateNames, name, lastname, loading } = useSettings();
 
 
 </script>
@@ -99,7 +99,7 @@ const {updateNames, initEmailUpdate, name, lastname, loading } = useSettings();
               </UButton>
             </div>
           </UForm>
-
+          <!-- 
           <USeparator class="mt-5" />
           <UPageCard
             title="Update email"
@@ -117,7 +117,7 @@ const {updateNames, initEmailUpdate, name, lastname, loading } = useSettings();
                 @click.prevent="initEmailUpdate"
               />
             </template>
-          </UPageCard>
+          </UPageCard> -->
         </UCard>
       </div>
     </template>

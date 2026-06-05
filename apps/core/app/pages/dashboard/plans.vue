@@ -3,35 +3,88 @@
 import type { PricingTableTier, PricingTableSection } from '@nuxt/ui';
 import { useEarlyRegister } from '~/composables/useEarlyRegister';
 import { usePlansData } from '~/composables/usePlansData';
-
+import { useGetUserWaitlist } from '~/composables/getUserWaitlist';
 
 definePageMeta({
     layout: 'dashboard'
 });
-const { data, pending, refresh, error } = usePlansData();
-const { loading, register } = useEarlyRegister();
+
+const { data: plansData, pending: loadingPlans, refresh: refreshPlans, error: plansError } = usePlansData();
+const { loading: registerLoading, register } = useEarlyRegister();
+const { data: waitlistData, error: waitlistError, refresh: refreshWaitList ,pending: loadingWaitList  }  = useGetUserWaitlist();
+
+const loading = computed(() => loadingPlans.value || loadingWaitList.value);
+const hasErrors = computed(() => {
+  if (plansError.value) return true;
+  if (waitlistError.value && waitlistError.value.message !== 'Not registered') return true;
+  return false;
+});
+const refresh = () => { void refreshPlans(); void refreshWaitList(); };
 
 
 const tiers = computed(() => {
- if (!data.value) return;
+ if (!plansData.value) return;
 
- const tiers: PricingTableTier[] = data.value.plans.map((da) => {
-  const btn = da.code !== 'free';
+  
+ const tiers: PricingTableTier[] = plansData.value.plans.map((da) => {
+  const isFree = da.code === 'free';
+  const isCurrentPlan = waitlistData.value?.planId === da.id;
+  const isSubscribedToOther = !!waitlistData.value && !isCurrentPlan;
+
+  let btnProps = {};
+  if (!isFree) {
+    if (isCurrentPlan) {
+      btnProps = {
+        button: {
+          label: 'Unsubscribe',
+          color: 'error',
+          loading: registerLoading.value,
+          onClick: async () => { 
+            await register(da.id); 
+            await refreshWaitList();
+          }
+        }
+      };
+    } else if (isSubscribedToOther) {
+      btnProps = {
+        button: {
+          label: `Resubscribe to ${da.name}`,
+          loading: registerLoading.value,
+          onClick: async () => { 
+            await register(da.id); 
+            await refreshWaitList();
+          }
+        }
+      };
+    } else {
+      btnProps = {
+        button: {
+          label: 'Join waitlist',
+          loading: registerLoading.value,
+          onClick: async () => { 
+            await register(da.id); 
+            await refreshWaitList();
+          }
+        }
+      };
+    }
+  }
+
   return {
     id: da.code,
     title: da.name.toLocaleUpperCase(),
     price: `$${(da.price / 100).toString()}`,
     description: da.features.freeDescription,
     billingCycle: da.code === 'custom' ? 'custom' : '/month',
-    ...(btn ? { button: { label: 'Join waitlist', loading: loading.value, onClick: async () => { await register(da.id); } } } : {})
+    ...btnProps
   };
  });
 
  return tiers;
 });
 const sections = computed<PricingTableSection[]>(() => {
-  if (!data.value) return [];
-  const plans = data.value.plans;
+  if (!plansData.value) return [];
+  const plans = plansData.value.plans;
   
   const buildTiers = <T extends string | boolean | number>(extractor: (plan: typeof plans[0]) => T): Record<string, T> => {
     return plans.reduce<Record<string, T>>((acc, plan) => {
@@ -117,13 +170,13 @@ const sections = computed<PricingTableSection[]>(() => {
 
     <template #body> 
       <LazySpinner
-        v-if="pending && !data"
+        v-if="loading && (!plansData && waitlistData)"
         class="mt-10"
       />
       <UAlert
-        v-if="error"
+        v-if="hasErrors"
         title="Error!"
-        :description="error.message"
+        :description="plansError?.message || (waitlistError?.message === 'Not registered' ? undefined : waitlistError?.message)"
         color="error"
         variant="outline"
         :actions="[

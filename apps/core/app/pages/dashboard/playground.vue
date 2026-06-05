@@ -7,7 +7,7 @@ definePageMeta({
 
 const { endpoint, payload, error, loading, data: response, execute } = useDemoApi();
 const data = computed(() => JSON.stringify(response.value, null, 2));
-const hasNoSub = computed(() => error.value === "User has no active subscription");
+const { data: tokenList, refresh } = await useListApiToken();
 
 const run = async (value: string, endpointParam: string) => {
   payload.value = value;
@@ -21,7 +21,6 @@ const run = async (value: string, endpointParam: string) => {
 
   endpoint.value = demoEndpoint;
   await execute();
-  console.log(data.value);
 };
 
 </script>
@@ -54,8 +53,9 @@ const run = async (value: string, endpointParam: string) => {
 
     <template #body>
       <UCard 
+        v-if="tokenList?.tokenList?.length"
         title="Playground"
-        description="Enter an ip address below to get a response"
+        description="Enter an ip address below to get a response. (Your quota is not consumed in here)"
         :ui="{ root: 'h-fit overflow-visible', body: 'overflow-visible h-full' }"
       >
         <DashboardPlayForm
@@ -63,7 +63,7 @@ const run = async (value: string, endpointParam: string) => {
           @check="run"
         />
         <UBadge 
-          v-if="data && !error"
+          v-if="data && (!error && !loading)"
           color="success"
           variant="subtle"
           size="lg"
@@ -80,24 +80,10 @@ const run = async (value: string, endpointParam: string) => {
           icon="i-lucide-circle-alert"
           color="error"
           title="Error !"
-          :description="hasNoSub ? 'Please create an API key first' : error"
+          :description="error"
           variant="subtle"
         >
           <template #actions>
-            <GeneralModal
-              v-if="hasNoSub"
-              :show-btn="true"
-              btn-size="md"
-              :btn-color="'success'"
-              :btn-label="'Create API Token'"
-              :btn-icon="'lucide:plus'" 
-              title="Create API Token"
-              :msg="'Create New API Token'"
-            > 
-              <template #contentModal>
-                <FormsNewTokenForm />
-              </template>
-            </GeneralModal>
             <UButton
               icon="i-lucide-flask-conical"
               class="cursor-pointer"
@@ -109,6 +95,39 @@ const run = async (value: string, endpointParam: string) => {
           </template>
         </UAlert>
       </UCard>
+      <LazyUEmpty 
+        v-else
+        class="flex-1 min-h-[550px] grid place-content-center text-center"
+        icon="i-lucide-key-round"
+        title="No tokens yet" 
+        description="It looks like you haven't created any tokens yet. Create one to get started with the playground."
+        :ui="{root: 'ring-0'}"
+      > 
+        <template #actions>
+          <GeneralModal
+            :show-btn="true"
+            btn-size="md"
+            :btn-color="'success'"
+            :btn-label="'Create API Token'"
+            :btn-icon="'lucide:plus'" 
+            title="Create API Token"
+            :msg="'Create New API Token'"
+            @update:model-value="(val) => { if (!val) refresh() }"
+          > 
+            <template #contentModal>
+              <FormsNewTokenForm />
+            </template>
+          </GeneralModal>
+          <UButton
+            icon="i-lucide-flask-conical"
+            class="cursor-pointer"
+            to="/dashboard/playground"
+            variant="outline"
+            color="primary"
+            label="Playground"
+          />
+        </template>
+      </LazyUEmpty>
     </template>
   </UDashboardPanel>
 </template>
