@@ -17,3 +17,6 @@ auth-logs
 !.env.example
 config.dev.json
 --port
+secrets/*.txt
+secrets/*.age
+data-sources

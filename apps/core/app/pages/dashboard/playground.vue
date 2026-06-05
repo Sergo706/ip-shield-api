@@ -1,39 +1,29 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { useAuthRedirect } from '~/composables/useAuthRedirect';
-import z from 'zod';
-import AuthApiModal from '~/components/Auth/AuthApiModal.vue';
-
-const ipv = z.ipv4(); // validate
-
-const onCreate = async () => {
-    const overlay = useOverlay();
-    const modal = overlay.create(AuthApiModal);
-    const instance = modal.open({
-        title: 'Create API Token',
-        msg: `Fill the form below to create a new token`,
-        action: 'create',
-    });
-   await instance.result;
-   return;
-};
-
-// await useAuthRedirect('/', undefined);
+import { useDemoApi } from '~/composables/useDemoApi';
 definePageMeta({
     layout: 'dashboard'
 });
 
-const data = `
-{
-  "userId": 1,
-  "id": 1,
-  "title": "delectus aut autem",
-  "completed": false
-}
-`;
-const errors = ref(undefined);
+const { endpoint, payload, error, loading, data: response, execute } = useDemoApi();
+const data = computed(() => JSON.stringify(response.value, null, 2));
+const hasNoSub = computed(() => error.value === "User has no active subscription");
 
-// TODO: fetch
+const run = async (value: string, endpointParam: string) => {
+  payload.value = value;
+  let demoEndpoint = '/demo/lookup';
+  if (endpointParam.includes('lookup')) demoEndpoint = '/demo/lookup';
+  else if (endpointParam.includes('email-domain')) demoEndpoint = '/demo/email';
+  else if (endpointParam.includes('user-agent')) demoEndpoint = '/demo/useragent';
+  else if (endpointParam.includes(':geo')) demoEndpoint = '/demo/geo';
+  else if (endpointParam.includes('network')) demoEndpoint = '/demo/network';
+  else if (endpointParam.includes('summary')) demoEndpoint = '/demo/summary';
+
+  endpoint.value = demoEndpoint;
+  await execute();
+  console.log(data.value);
+};
+
 </script>
 
 <template>
@@ -45,14 +35,19 @@ const errors = ref(undefined);
         </template>
 
         <template #right>
-          <UButton
-            label="Create API Token"
-            variant="subtle"
-            color="primary"
-            size="sm"
-            trailing-icon="lucide:plus"
-            @click.prevent="onCreate"
-          />
+          <GeneralModal
+            :show-btn="true"
+            btn-size="sm"
+            :btn-color="'success'"
+            :btn-label="'Create API Token'"
+            :btn-icon="'lucide:plus'" 
+            title="Create API Token"
+            :msg="'Create New API Token'"
+          > 
+            <template #contentModal>
+              <FormsNewTokenForm />
+            </template>
+          </GeneralModal>
         </template>
       </UDashboardNavbar>
     </template>
@@ -61,10 +56,14 @@ const errors = ref(undefined);
       <UCard 
         title="Playground"
         description="Enter an ip address below to get a response"
+        :ui="{ root: 'h-fit overflow-visible', body: 'overflow-visible h-full' }"
       >
-        <DashboardPlayForm @check="(e) => console.log(e)" />
+        <DashboardPlayForm
+          :loading="loading"
+          @check="run"
+        />
         <UBadge 
-          v-if="data"
+          v-if="data && !error"
           color="success"
           variant="subtle"
           size="lg"
@@ -76,14 +75,39 @@ const errors = ref(undefined);
           :data
         />
         <UAlert 
-          v-else-if="!data && errors" 
+          v-else-if="!data && error" 
           class="w-full mt-5"
           icon="i-lucide-circle-alert"
           color="error"
-          title="Snap!"
-          description="The message of the error"
+          title="Error !"
+          :description="hasNoSub ? 'Please create an API key first' : error"
           variant="subtle"
-        />
+        >
+          <template #actions>
+            <GeneralModal
+              v-if="hasNoSub"
+              :show-btn="true"
+              btn-size="md"
+              :btn-color="'success'"
+              :btn-label="'Create API Token'"
+              :btn-icon="'lucide:plus'" 
+              title="Create API Token"
+              :msg="'Create New API Token'"
+            > 
+              <template #contentModal>
+                <FormsNewTokenForm />
+              </template>
+            </GeneralModal>
+            <UButton
+              icon="i-lucide-flask-conical"
+              class="cursor-pointer"
+              variant="outline"
+              color="primary"
+              label="Retry"
+              @click.prevent="execute"
+            />
+          </template>
+        </UAlert>
       </UCard>
     </template>
   </UDashboardPanel>

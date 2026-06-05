@@ -20,9 +20,12 @@ const emit = defineEmits<(e: 'close', value?: boolean) => void>();
     :title="title"      
     :description="msg ?? ''"
   >
-    <template v-if="action === 'create' || action === 'ip-restriction'" #body>
-      <NewTokenForm v-if="action === 'create'" />
-      <TokenNewIpRestrict
+    <template
+      v-if="action === 'create' || action === 'ip-restriction'"
+      #body
+    >
+      <FormsNewTokenForm v-if="action === 'create'" />
+      <FormsTokenNewIpRestrict
         v-else-if="action === 'ip-restriction' && tokenId"
         :token-id="tokenId"
       />

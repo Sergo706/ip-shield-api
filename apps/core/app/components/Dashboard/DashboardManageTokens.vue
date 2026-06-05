@@ -1,43 +1,28 @@
 <script setup lang="ts">
-import type { FilterableTableApi, HomeTokenList, SortableColumn, SortingItem } from '~~/shared/types/DashboardTokenList';
+import type { FilterableTableApi, HomeTokenList, SortingItem } from '~~/shared/types/DashboardTokenList';
 import { h, resolveComponent } from 'vue';
 import type { TableColumn } from '@nuxt/ui';
-import { DateFormatter } from '@internationalized/date';
 import { upperFirst } from 'scule';
 import AuthApiModal from '~/components/Auth/AuthApiModal.vue';
+import { getSortableHeader } from '~~/app/utils/sortableHeader';
+import { useDateFormatter } from '~/composables/useDateFormatter';
+import { useApiTokens } from '~~/app/composables/useTokens';
 
-// TODO: // CRUD Actions
 const UButton = resolveComponent('UButton');
 const UBadge = resolveComponent('UBadge');
 const UDropdownMenu = resolveComponent('UDropdownMenu');
 
+const { dtFmt, formatDate } = useDateFormatter();
+const { rotate, rotatedToken, revoke, revokedToken, error: tokensError } = useApiTokens();
+const showLoadingModal = ref(false);
+const showRotateModal = ref(false);
+const toast = useToast();
 
 const props = defineProps<{
   data: HomeTokenList[];
 }>();
 
-const locale = ref(import.meta.client ? navigator.language : 'en-US');
-onMounted(() => {
-  locale.value = navigator.language;
-});
-
-const dtFmt = computed(() => new DateFormatter(locale.value, {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false
-}));
-
-const timeFmt = computed(() => new DateFormatter(locale.value, {
-  day: 'numeric',
-  month: 'short',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false
-}));
-
+const emit = defineEmits(['submitted']);
 
 const sorting = ref<SortingItem[]>([
   {
@@ -47,76 +32,19 @@ const sorting = ref<SortingItem[]>([
 ]);
 
 
-function getSortableHeader(column: SortableColumn, label: string) {
-  const isSorted = column.getIsSorted();
-
-  return h(
-    UDropdownMenu,
-    {
-      content: {
-        align: 'start'
-      },
-      'aria-label': `${label} sorting options`,
-      items: [
-        {
-          label: 'Asc',
-          type: 'checkbox' as const,
-          icon: 'i-lucide-arrow-up-narrow-wide',
-          checked: isSorted === 'asc',
-          onSelect: () => {
-            if (isSorted === 'asc') {
-              column.clearSorting();
-              return;
-            }
-
-            column.toggleSorting(false);
-          }
-        },
-        {
-          label: 'Desc',
-          type: 'checkbox' as const,
-          icon: 'i-lucide-arrow-down-wide-narrow',
-          checked: isSorted === 'desc',
-          onSelect: () => {
-            if (isSorted === 'desc') {
-              column.clearSorting();
-              return;
-            }
-
-            column.toggleSorting(true);
-          }
-        }
-      ]
-    },
-    () =>
-      h(UButton, {
-        color: 'neutral',
-        variant: 'ghost',
-        label,
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
-        class: '-mx-2.5 data-[state=open]:bg-elevated',
-        'aria-label': `Sort ${label}`
-      })
-  );
-}
-
-const columns: TableColumn<HomeTokenList>[] = [
+const columns = computed<TableColumn<HomeTokenList>[]>(() => [
   {
     accessorKey: 'id',
-    header: ({ column }) => getSortableHeader(column, '# ID'),
+    header: ({ column }) => getSortableHeader(column, '# ID', {UButton, UDropdownMenu}),
     cell: ({ row }) => `#${String(row.getValue<number>('id'))}`
   },
   {
     accessorKey: 'name',
-    header: ({ column }) => getSortableHeader(column, 'Name')
+    header: ({ column }) => getSortableHeader(column, 'Name', {UButton, UDropdownMenu})
   },
   {
     accessorKey: 'active',
-    header: ({ column }) => getSortableHeader(column, 'Status'),
+    header: ({ column }) => getSortableHeader(column, 'Status', {UButton, UDropdownMenu}),
     cell: ({ row }) => {
       const active = row.getValue<boolean>('active');
       return h(UBadge, { class: 'capitalize', variant: 'subtle', color: active ? 'success' as const : 'error' as const }, () =>
@@ -126,12 +54,12 @@ const columns: TableColumn<HomeTokenList>[] = [
   },
   {
     accessorKey: 'created_at',
-    header: ({ column }) => getSortableHeader(column, 'Created'),
+    header: ({ column }) => getSortableHeader(column, 'Created', {UButton, UDropdownMenu}),
     cell: ({ row }) => dtFmt.value.format(new Date(row.getValue<Date>('created_at')))
   },
   {
     accessorKey: 'expires_at',
-    header: ({ column }) => getSortableHeader(column, 'Expires'),
+    header: ({ column }) => getSortableHeader(column, 'Expires', {UButton, UDropdownMenu}),
     cell: ({ row }) => {
       const val = row.getValue<Date | null>('expires_at');
       if (!val) return '—';
@@ -140,12 +68,12 @@ const columns: TableColumn<HomeTokenList>[] = [
   },
   {
     accessorKey: 'last_used',
-    header: ({ column }) => getSortableHeader(column, 'Last Used'),
-    cell: ({ row }) => timeFmt.value.format(new Date(row.getValue<Date>('last_used')))
+    header: ({ column }) => getSortableHeader(column, 'Last Used', {UButton, UDropdownMenu}),
+    cell: ({ row }) => formatDate(new Date(row.getValue<Date>('last_used')))
   },
   {
     accessorKey: 'usage_count',
-    header: ({ column }) => getSortableHeader(column, 'Usage'),
+    header: ({ column }) => getSortableHeader(column, 'Usage', {UButton, UDropdownMenu}),
     meta: {
       class: {
         th: 'text-right',
@@ -156,7 +84,7 @@ const columns: TableColumn<HomeTokenList>[] = [
   },
   {
     accessorKey: 'restricted_to_ip_address',
-    header: ({ column }) => getSortableHeader(column, 'Restricted to IPs'),
+    header: ({ column }) => getSortableHeader(column, 'Restricted to IPs', {UButton, UDropdownMenu}),
     cell: ({ row }) => {
       const val = row.getValue<string | string[]>('restricted_to_ip_address');
       return Array.isArray(val) ? val.join(', ') : val;
@@ -191,7 +119,7 @@ const columns: TableColumn<HomeTokenList>[] = [
       );
     }
   }
-];
+]);
 
 
 function getRowItems(tokenId: number) {
@@ -213,11 +141,32 @@ function getRowItems(tokenId: number) {
           msg: `You sure you want to proceed? the old couldn't be used after this point, and the new one will have the settings the old want did.`,
           action: 'rotate',
           tokenId
-        });
+        }); 
 
         if ((await instance.result) === true) {
-          // TODO
-          return;
+          try {
+            tokensError.value = '';
+            showLoadingModal.value = true;
+            await rotate(tokenId);
+
+            if (rotatedToken.value) {
+                showRotateModal.value = true;
+                emit('submitted');
+                return;
+            }
+
+            else if (tokensError.value) {
+             toast.add({
+                  title: 'Error',
+                  description: tokensError.value,
+                  color: 'error',
+                  duration: 10000,
+                });
+            }
+            return;
+          } finally {
+            showLoadingModal.value = false;
+          }
         }
 
         return;
@@ -236,6 +185,7 @@ function getRowItems(tokenId: number) {
         });
 
        await instance.result;
+       emit('submitted');
        return;
       }
     },
@@ -256,8 +206,33 @@ function getRowItems(tokenId: number) {
         });
 
         if ((await instance.result) === true) {
-          // TODO
-          return;
+          try {
+            tokensError.value = '';
+            showLoadingModal.value = true;
+            await revoke(tokenId);
+
+            if (revokedToken.value) {
+              const data = typeof revokedToken.value === 'object' ? revokedToken.value.msg : revokedToken.value;
+              toast.add({
+                title: 'Success',
+                description: data,
+                color: 'success',
+                type: 'foreground',
+                duration: 10000,
+              });
+              emit('submitted');
+            } else if (tokensError.value) {
+                toast.add({
+                  title: 'Error',
+                  description: tokensError.value,
+                  color: 'error',
+                  duration: 10000,
+                });
+            }
+            return;
+          } finally {
+            showLoadingModal.value = false;
+          }
         }
         return;
       }
@@ -282,6 +257,23 @@ const name = computed({
 </script>
 
 <template>
+  <LoadingModal v-model="showLoadingModal" />
+
+  <GeneralModal
+    :show-btn="false"
+    :open="showRotateModal"
+    title="Rotated Token!"
+    :msg="'Your old token is no longer valid'"
+    @close="(e) => { rotatedToken = undefined; showRotateModal = e }"
+  > 
+    <template #contentModal>
+      <NewApiKey
+        v-if="rotatedToken?.newRawToken"
+        :raw-api-key="rotatedToken.newRawToken"
+      />
+    </template>
+  </GeneralModal>
+
   <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
     <UInput
       v-model="name"
@@ -320,22 +312,23 @@ const name = computed({
       />
     </UDropdownMenu>
   </div>
-
-  <UTable
-    ref="table"
-    v-model:sorting="sorting"
-    :data="props.data"
-    :columns="columns"
-    sticky
-    :loading="false"
-    loading-color="primary"
-    loading-animation="carousel"
-    :ui="{
-      base: 'table-fixed border-separate border-spacing-0',
-      thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
-      tbody: '[&>tr]:last:[&>td]:border-b-0',
-      th: 'first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
-      td: 'border-b border-default'
-    }"
-  />
+  <ClientOnly>
+    <UTable
+      ref="table"
+      v-model:sorting="sorting"
+      :data="props.data"
+      :columns="columns"
+      sticky
+      :loading="false"
+      loading-color="primary"
+      loading-animation="carousel"
+      :ui="{
+        base: 'table-fixed border-separate border-spacing-0',
+        thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
+        tbody: '[&>tr]:last:[&>td]:border-b-0',
+        th: 'first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
+        td: 'border-b border-default'
+      }"
+    />
+  </ClientOnly>
 </template>

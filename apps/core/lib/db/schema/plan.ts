@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { varchar, int, mysqlTable, mysqlEnum, boolean, timestamp } from "drizzle-orm/mysql-core";
+import { varchar, int, mysqlTable, mysqlEnum, boolean, timestamp,json, unique } from "drizzle-orm/mysql-core";
 import { usersTable } from "./_exists/users";
 
 export const plans = mysqlTable('plans', {
@@ -8,12 +8,28 @@ export const plans = mysqlTable('plans', {
   name: varchar('name', { length: 100 }).notNull(),
   billingMode: mysqlEnum('billing_mode', ['free', 'processor', 'manual']).notNull(),
   requestsPerMinute: int('requests_per_minute').notNull(),
-  requestsPerHour: int('requests_per_hour').notNull(),
-  monthlyQuota: int('monthly_quota'),
-  apiKeyLimit: int('api_key_limit').notNull().default(1),
+  monthlyQuota: int('monthly_quota').notNull(),
+  features: json('features').$type<{
+    bulkLookup: boolean;
+    supportIncluded: boolean;
+    customDatasets: number;
+    freeDescription: string;
+    apiKeyLimit: number;
+  }>().notNull(),
   isPublic: boolean('is_public').notNull().default(true),
   isActive: boolean('is_active').notNull().default(true),
 });
+
+export const earlyAccessBenefits = mysqlTable('early_access', {
+  id: int('id').autoincrement().primaryKey(),
+  userId: int('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
+  planId: int('plan_id').notNull().references(() => plans.id),
+  requestsPerMinute: int('requests_per_minute').notNull(),
+  monthlyQuota: int('monthly_quota').notNull(),
+}, (table) => [
+    unique('only_on_sub').on(table.userId),
+]);
+
 
 export const planPrices = mysqlTable('plan_prices', {
   id: int('id').autoincrement().primaryKey(),
@@ -34,11 +50,23 @@ export const subscriptions = mysqlTable('subscriptions', {
   planId: int('plan_id').notNull().references(() => plans.id),
   planPriceId: int('plan_price_id').references(() => planPrices.id),
   status: mysqlEnum('status', ['trialing', 'active', 'past_due', 'canceled', 'expired']).notNull(),
-  provider: mysqlEnum('provider', ['none', 'processor', 'monero', 'manual']).notNull(),
+  provider: mysqlEnum('provider', ['none', 'processor', 'manual']).notNull(),
   currentPeriodStart: timestamp('current_period_start'),
   currentPeriodEnd: timestamp('current_period_end'),
   cancelAtPeriodEnd: boolean('cancel_at_period_end').notNull().default(false),
-});
+}, (table) => [
+    unique('one_sub_per_user').on(table.userId), 
+]);
+
+export const usageRollupMonthly = mysqlTable('usage_rollup_monthly', {
+  id: int('id').autoincrement().primaryKey(),
+  userId: int('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
+  planId: int('plan_id').notNull().references(() => plans.id),
+  periodString: varchar('period_string', { length: 7 }).notNull(),
+  requestsUsed: int('requests_used').notNull().default(0),
+}, (table) => [
+  unique('user_plan_period').on(table.userId, table.planId, table.periodString),
+]);
 
 export const plansRelations = relations(plans, ({ many }) => ({
   prices: many(planPrices),

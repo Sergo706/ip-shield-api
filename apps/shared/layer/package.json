@@ -9,6 +9,7 @@
     "nuxt": "catalog:",
     "@nuxt/ui": "catalog:",
     "@riavzon/utils": "^1.1.6",
+    "tailwindcss": "catalog:",
     "zod": "catalog:"
   }
 }

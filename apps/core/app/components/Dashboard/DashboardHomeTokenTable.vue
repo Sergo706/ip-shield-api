@@ -1,11 +1,11 @@
+<!-- eslint-disable @typescript-eslint/no-unnecessary-condition -->
 <script setup lang="ts">
 import type { HomeTokenList } from '~~/shared/types/DashboardTokenList';
-import { h, resolveComponent } from 'vue';
 import type { TableColumn } from '@nuxt/ui';
-import { DateFormatter } from '@internationalized/date';
+import { useDateFormatter } from '~/composables/useDateFormatter';
 
 const UBadge = resolveComponent('UBadge');
-
+const { formatDate } = useDateFormatter();
 const props = defineProps<{
   data: HomeTokenList[];
 }>();
@@ -13,22 +13,6 @@ const props = defineProps<{
 const locale = ref(import.meta.client ? navigator.language : 'en-US');
 onMounted(() => { locale.value = navigator.language; });
 
-const dtFmt = computed(() => new DateFormatter(locale.value, {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false
-}));
-
-const timeFmt = computed(() => new DateFormatter(locale.value, {
-  day: 'numeric',
-  month: 'short',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false
-}));
 
 const columns: TableColumn<HomeTokenList>[] = [
   {
@@ -53,7 +37,7 @@ const columns: TableColumn<HomeTokenList>[] = [
   {
     accessorKey: 'created_at',
     header: 'Created',
-    cell: ({ row }) => dtFmt.value.format(new Date(row.getValue<Date>('created_at')))
+    cell: ({ row }) => formatDate(row.getValue<Date>('created_at'))
   },
   {
     accessorKey: 'expires_at',
@@ -61,13 +45,17 @@ const columns: TableColumn<HomeTokenList>[] = [
     cell: ({ row }) => {
       const val = row.getValue<Date | null>('expires_at');
       if (!val) return '—';
-      return dtFmt.value.format(new Date(val));
+      return formatDate(val);
     }
   },
   {
     accessorKey: 'last_used',
     header: 'Last Used',
-    cell: ({ row }) => timeFmt.value.format(new Date(row.getValue<Date>('last_used')))
+    cell: ({ row }) => {
+      const val = row.getValue<Date | null>('last_used');
+      if (!val || isNaN(val.getTime())) return 'Never used';
+      return formatDate(val);
+    }
   },
   {
     accessorKey: 'usage_count',
@@ -85,7 +73,12 @@ const columns: TableColumn<HomeTokenList>[] = [
     header: 'Restricted to IPs',
     cell: ({ row }) => {
       const val = row.getValue<string | string[]>('restricted_to_ip_address');
-      return Array.isArray(val) ? val.join(', ') : val;
+        if (Array.isArray(val) && val.length > 0) {
+          return val.join(', ');
+        } else if(typeof val === 'string') return val;
+        else {
+          return '—';
+        }
     }
   }
 ];

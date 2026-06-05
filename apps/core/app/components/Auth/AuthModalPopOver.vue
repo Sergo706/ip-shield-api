@@ -1,25 +1,21 @@
 
 <script setup lang="ts">
-const props = defineProps<{
-  msg?: string;
-  navigateTo: string;
+defineProps<{
+  title: string;
+  msg: string;
 }>();
 
-const emit = defineEmits(['close']);
-
-const onClick = async (): Promise<void> => {
-  emit('close');
-  await navigateTo(props.navigateTo, { external: true });
-};
+const isOpen = defineModel<boolean>('open'); 
+const onClick = () => {isOpen.value = false;};
 
 </script>
 
 <template>
   <UModal
-    :close="{ onClick: () => emit('close', false) }"
+    v-model:open="isOpen"
     :ui="{ overlay: 'bg-elevated/55 backdrop-blur-lg backdrop-saturate-150' }"
-    :title="`Security Verification is required`"
-    :description="msg ?? 'To continue with this action, please check your email fist'"
+    :title="title"
+    :description="msg"
   >
     <template #footer>
       <div class="flex gap-2">

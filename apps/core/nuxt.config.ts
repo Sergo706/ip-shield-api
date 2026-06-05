@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     '@nuxt/hints',
     '@nuxt/image',
     '@nuxtjs/mdc',
+    '@vueuse/nuxt',
   ],
   authH3Client: {
     enableMiddleware: false,
@@ -16,6 +17,18 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true
   },
+  vite: {
+      esbuild: { target: 'es2022' },
+      server: {
+        watch: { usePolling: true, interval: 100 },
+        hmr: { 
+           protocol: 'wss',
+           host: 'localhost',
+           port: 443,
+           clientPort: 443,
+        }
+      },
+    },
     typescript: {
     tsConfig: {
       compilerOptions: {

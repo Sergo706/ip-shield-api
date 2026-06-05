@@ -5,6 +5,8 @@ import AuthPasswordResetForm from '~/components/Auth/AuthPasswordResetForm.vue';
 import AuthMfaForm from '~/components/Auth/AuthMfaForm.vue';
 import AuthChangeEmail from '~/components/Auth/AuthChangeEmail.vue';
 import {useMagicLink} from '@riavzon/auth-h3client/client';
+
+useState('auth', () => ({ authorized: false, mfaRequired: false }));
 const result = await useMagicLink(); 
 
 

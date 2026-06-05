@@ -24,6 +24,9 @@ catalogs:
     '@nuxtjs/seo':
       specifier: 5.1.3
       version: 5.1.3
+    '@vueuse/core':
+      specifier: 14.3.0
+      version: 14.3.0
     date-fns:
       specifier: 4.1.0
       version: 4.1.0
@@ -65,20 +68,32 @@ importers:
         specifier: ^0.21.1
         version: 0.21.1(magicast@0.5.2)
       '@riavzon/auth-h3client':
-        specifier: ^2.0.3
-        version: 2.0.3(8efac8ea34cbff680395dceeef1d3e3b)
-      '@riavzon/shield-base':
         specifier: ^2.0.6
-        version: 2.0.6
+        version: 2.0.6(8efac8ea34cbff680395dceeef1d3e3b)
+      '@riavzon/shield-base':
+        specifier: ^3.0.2
+        version: 3.0.2
       '@riavzon/utils':
-        specifier: ^1.1.6
-        version: 1.1.6(pino@9.11.0)
+        specifier: ^1.3.0
+        version: 1.3.0(pino@9.11.0)
+      '@vueuse/core':
+        specifier: 'catalog:'
+        version: 14.3.0(vue@3.5.34(typescript@6.0.3))
+      '@vueuse/nuxt':
+        specifier: 14.3.0
+        version: 14.3.0(magicast@0.5.2)(nuxt@4.4.4(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@25.6.0)(@vue/compiler-sfc@3.5.34)(better-sqlite3@12.9.0)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.9.0)(drizzle-orm@0.45.2(better-sqlite3@12.9.0)(mysql2@3.22.3(@types/node@25.6.0)))(mysql2@3.22.3(@types/node@25.6.0)))(drizzle-orm@0.45.2(better-sqlite3@12.9.0)(mysql2@3.22.3(@types/node@25.6.0)))(eslint@10.2.1(jiti@2.7.0))(ioredis@5.10.1)(lightningcss@1.32.0)(magicast@0.5.2)(mysql2@3.22.3(@types/node@25.6.0))(optionator@0.9.4)(rollup-plugin-visualizer@7.0.1(rollup@4.60.3))(rollup@4.60.3)(srvx@0.11.15)(terser@5.46.2)(tsx@4.21.0)(typescript@6.0.3)(vite@7.3.2(@types/node@25.6.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)(yaml@2.8.4))(vue-tsc@3.2.7(typescript@6.0.3))(yaml@2.8.4))(vue@3.5.34(typescript@6.0.3))
       date-fns:
         specifier: 'catalog:'
         version: 4.1.0
       drizzle-orm:
         specifier: 0.45.2
         version: 0.45.2(better-sqlite3@12.9.0)(mysql2@3.22.3(@types/node@25.6.0))
+      lmdb:
+        specifier: 3.5.2
+        version: 3.5.2
+      maxmind:
+        specifier: 5.0.5
+        version: 5.0.5
       mysql2:
         specifier: 3.22.3
         version: 3.22.3(@types/node@25.6.0)
@@ -91,6 +106,9 @@ importers:
       tailwindcss:
         specifier: 'catalog:'
         version: 4.2.4
+      vue:
+        specifier: ^3.5.34
+        version: 3.5.34(typescript@6.0.3)
       zod:
         specifier: 'catalog:'
         version: 4.4.1
@@ -137,6 +155,9 @@ importers:
       nuxt:
         specifier: 'catalog:'
         version: 4.4.4(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@25.6.0)(@vue/compiler-sfc@3.5.34)(better-sqlite3@12.9.0)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.9.0)(drizzle-orm@0.45.2(better-sqlite3@12.9.0)(mysql2@3.22.3(@types/node@25.6.0)))(mysql2@3.22.3(@types/node@25.6.0)))(drizzle-orm@0.45.2(better-sqlite3@12.9.0)(mysql2@3.22.3(@types/node@25.6.0)))(ioredis@5.10.1)(lightningcss@1.32.0)(magicast@0.5.2)(mysql2@3.22.3(@types/node@25.6.0))(optionator@0.9.4)(rollup-plugin-visualizer@7.0.1(rollup@4.60.3))(rollup@4.60.3)(srvx@0.11.15)(terser@5.46.2)(tsx@4.21.0)(typescript@6.0.3)(vite@7.3.2(@types/node@25.6.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)(yaml@2.8.4))(yaml@2.8.4)
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.2.4
       zod:
         specifier: 'catalog:'
         version: 4.4.1
@@ -2538,8 +2559,8 @@ packages:
   '@poppinss/exception@1.2.3':
     resolution: {integrity: sha512-dCED+QRChTVatE9ibtoaxc+WkdzOSjYTKi/+uacHWIsfodVfpsueo3+DKpgU5Px8qXjgmXkSvhXvSCz3fnP9lw==}
 
-  '@riavzon/auth-h3client@2.0.3':
-    resolution: {integrity: sha512-mVvzPfwpy0zdql08o/W60vJjYLhp1c3EOrvi2NZQTB1PkbkDh7vg/6uOG22KOacZuyYV1XTKGFwqPUjFNAkAiA==}
+  '@riavzon/auth-h3client@2.0.6':
+    resolution: {integrity: sha512-IhpeEVHO6MZu0S+TNmgw0RdKnZcvW/fYq8lZVhtJTtriUdLSrSWafjFs2ZynWf6p1Tg86I97KxhVg6iGEgKjrA==}
     peerDependencies:
       h3: ^1.15.4 || ^2.0.0-beta.4
       nitropack: ^2.13.1
@@ -2549,12 +2570,17 @@ packages:
   '@riavzon/json-to-ts@1.1.0':
     resolution: {integrity: sha512-/6pRQp0y7KW7NQtpv9kQOrpxHGbIdLtGmD2Ms9ARWVrHi+jrmLqzWUYPPjv5e45VF+2q6VnMWaMl4qRgsOnKPw==}
 
-  '@riavzon/shield-base@2.0.6':
-    resolution: {integrity: sha512-o1AZ0zCvSwPXSnH3YlsmddHzp89uGs10UC+6kYB10ta1/cqyiKJdShczPMj367w7rSyb/JMHJmrLT5Kz0Mzl2Q==}
+  '@riavzon/shield-base@3.0.2':
+    resolution: {integrity: sha512-zzfvpxJMt2i6U93dGqO6Matp83PT8aCKkYmBwQDZikjnqqP2ytWpYpBdg6ynLnnexpsoa5bhXiH1hPs+FN3pUA==}
     hasBin: true
 
   '@riavzon/utils@1.1.6':
     resolution: {integrity: sha512-kWIVprzOmZzLvdK8JAIWLdt0z8XcAIiDfOIjcrW+dyxart/bCfZWU60+uAcElTKTWz+VJa7vIn91mId3BWtGVg==}
+    peerDependencies:
+      pino: '>=8.0.0'
+
+  '@riavzon/utils@1.3.0':
+    resolution: {integrity: sha512-nlZex+zZsF5pSVpwJ6mN8fchsTK5W5ya5O1gfjwEQtxf43JUxbtSMmhDPnPOicX5EMtMCcSNdiKNqANAXhqA7A==}
     peerDependencies:
       pino: '>=8.0.0'
 
@@ -5743,6 +5769,10 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
+  maxmind@5.0.5:
+    resolution: {integrity: sha512-1lcH2kMjbBpCFhuHaMU32vz8CuOsKttRcWMQyXvtlklopCzN7NNHSVR/h9RYa8JPuFTGmkn2vYARm+7cIGuqDw==}
+    engines: {node: '>=12', npm: '>=6'}
+
   mdast-util-find-and-replace@3.0.2:
     resolution: {integrity: sha512-Tmd1Vg/m3Xz43afeNxDIhWRtFZgM2VLyaf4vSTYwudTyeuTneoL3qtWMA5jeLyz/O1vDJmmV4QuScFCA2tBPwg==}
 
@@ -5935,6 +5965,10 @@ packages:
 
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
+
+  mmdb-lib@3.0.2:
+    resolution: {integrity: sha512-7e87vk0DdWT647wjcfEtWeMtjm+zVGqNohN/aeIymbUfjHQ2T4Sx5kM+1irVDBSloNC3CkGKxswdMoo8yhqTDg==}
+    engines: {node: '>=10', npm: '>=6'}
 
   mocked-exports@0.1.1:
     resolution: {integrity: sha512-aF7yRQr/Q0O2/4pIXm6PZ5G+jAd7QS4Yu8m+WEeEHGnbo+7mE36CbLSDQiXYV8bVL3NfmdeqPJct0tUlnjVSnA==}
@@ -7222,6 +7256,10 @@ packages:
 
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
+
+  tiny-lru@11.4.7:
+    resolution: {integrity: sha512-w/Te7uMUVeH0CR8vZIjr+XiN41V+30lkDdK+NRIDCUYKKuL9VcmaUEmaPISuwGhLlrTGh5yu18lENtR9axSxYw==}
+    engines: {node: '>=12'}
 
   tinyclip@0.1.12:
     resolution: {integrity: sha512-Ae3OVUqifDw0wBriIBS7yVaW44Dp6eSHQcyq4Igc7eN2TJH/2YsicswaW+J/OuMvhpDPOKEgpAZCjkb4hpoyeA==}
@@ -10498,7 +10536,7 @@ snapshots:
 
   '@poppinss/exception@1.2.3': {}
 
-  '@riavzon/auth-h3client@2.0.3(8efac8ea34cbff680395dceeef1d3e3b)':
+  '@riavzon/auth-h3client@2.0.6(8efac8ea34cbff680395dceeef1d3e3b)':
     dependencies:
       '@nuxt/kit': 4.4.4(magicast@0.5.2)
       file-type: 21.3.0
@@ -10524,7 +10562,7 @@ snapshots:
 
   '@riavzon/json-to-ts@1.1.0': {}
 
-  '@riavzon/shield-base@2.0.6':
+  '@riavzon/shield-base@3.0.2':
     dependencies:
       '@riavzon/json-to-ts': 1.1.0
       cidr-calc: 1.0.4
@@ -10539,6 +10577,11 @@ snapshots:
       - supports-color
 
   '@riavzon/utils@1.1.6(pino@9.11.0)':
+    dependencies:
+      pino: 9.11.0
+      zod: 4.4.1
+
+  '@riavzon/utils@1.3.0(pino@9.11.0)':
     dependencies:
       pino: 9.11.0
       zod: 4.4.1
@@ -13788,6 +13831,11 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
+  maxmind@5.0.5:
+    dependencies:
+      mmdb-lib: 3.0.2
+      tiny-lru: 11.4.7
+
   mdast-util-find-and-replace@3.0.2:
     dependencies:
       '@types/mdast': 4.0.4
@@ -14152,6 +14200,8 @@ snapshots:
       pathe: 2.0.3
       pkg-types: 1.3.1
       ufo: 1.6.4
+
+  mmdb-lib@3.0.2: {}
 
   mocked-exports@0.1.1: {}
 
@@ -16473,6 +16523,8 @@ snapshots:
   tiny-inflate@1.0.3: {}
 
   tiny-invariant@1.3.3: {}
+
+  tiny-lru@11.4.7: {}
 
   tinyclip@0.1.12: {}
 

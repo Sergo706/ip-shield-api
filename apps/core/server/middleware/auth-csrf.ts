@@ -3,9 +3,9 @@ import { botDetectorMiddleware, generateCsrfCookie, isIPValid, } from "@riavzon/
 export default defineEventHandler(async (event) => {
     const { pathname } = getRequestURL(event);
 
-  if (isMethod(event, 'HEAD') || pathname === '/api/health' || pathname.startsWith('/api/_mdc') || pathname.startsWith('/_nuxt') || 
-  pathname.startsWith('/api/public')) {
-    if (isMethod(event, 'HEAD') || pathname === '/api/health') {
+  if (isMethod(event, 'HEAD') || pathname === '/health' || pathname.startsWith('/api/_mdc') || pathname.startsWith('/_nuxt') || 
+  pathname.startsWith('/api/v1')) {
+    if (isMethod(event, 'HEAD') || pathname === '/health') {
       sendNoContent(event);
     }
     return;

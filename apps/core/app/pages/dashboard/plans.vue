@@ -1,112 +1,91 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { useAuthRedirect } from '~/composables/useAuthRedirect';
 import type { PricingTableTier, PricingTableSection } from '@nuxt/ui';
-import AuthApiModal from '~/components/Auth/AuthApiModal.vue';
+import { useEarlyRegister } from '~/composables/useEarlyRegister';
+import { usePlansData } from '~/composables/usePlansData';
 
 
-// await useAuthRedirect('/', undefined);
 definePageMeta({
     layout: 'dashboard'
 });
+const { data, pending, refresh, error } = usePlansData();
+const { loading, register } = useEarlyRegister();
 
-const onCreate = async () => {
-    const overlay = useOverlay();
-    const modal = overlay.create(AuthApiModal);
-    const instance = modal.open({
-        title: 'Create API Token',
-        msg: `Fill the form below to create a new token`,
-        action: 'create',
-    });
-   await instance.result;
-   return;
-};
 
-// TODO: Fetch data from db
-const tiers = ref<PricingTableTier[]>([
-  {
-    id: 'free',
-    title: 'FREE',
-    price: '$0',
-    description: 'Free forever',
-    billingCycle: '/month',
-  },
-  {
-    id: 'pro',
-    title: 'Pro',
-    price: '$50',
-    description: 'More generous limits',
-    billingCycle: '/month',
-    button: {
-      label: 'Join waitlist'
+const tiers = computed(() => {
+ if (!data.value) return;
+
+ const tiers: PricingTableTier[] = data.value.plans.map((da) => {
+  const btn = da.code !== 'free';
+  return {
+    id: da.code,
+    title: da.name.toLocaleUpperCase(),
+    price: `$${(da.price / 100).toString()}`,
+    description: da.features.freeDescription,
+    billingCycle: da.code === 'custom' ? 'custom' : '/month',
+    ...(btn ? { button: { label: 'Join waitlist', loading: loading.value, onClick: async () => { await register(da.id); } } } : {})
+  };
+ });
+
+ return tiers;
+});
+const sections = computed<PricingTableSection[]>(() => {
+  if (!data.value) return [];
+  const plans = data.value.plans;
+  
+  const buildTiers = <T extends string | boolean | number>(extractor: (plan: typeof plans[0]) => T): Record<string, T> => {
+    return plans.reduce<Record<string, T>>((acc, plan) => {
+      acc[plan.code] = extractor(plan);
+      return acc;
+    }, {});
+  };
+
+  return [
+    {
+      title: 'Features',
+      features: [
+        {
+          title: 'Always fresh data',
+          tiers: buildTiers(() => true)
+        },
+        {
+          title: 'Access to 14 datasets',
+          tiers: buildTiers(() => true)
+        },
+        {
+          title: 'Bulk lookup',
+          tiers: buildTiers((p) => p.features.bulkLookup)
+        },
+        {
+          title: 'API Keys',
+          tiers: buildTiers((p) => p.code === 'custom' ? 'Contact us' : p.features.apiKeyLimit)
+        },
+        {
+          title: 'Support',
+          tiers: buildTiers((p) => p.features.supportIncluded ? (p.code === 'custom' ? 'Priority' : 'Basic') : false)
+        },
+        {
+          title: 'Custom datasets',
+          tiers: buildTiers((p) => p.code === 'custom' ? 'Contact us' : (p.features.customDatasets > 0 ? p.features.customDatasets : false))
+        },
+        {
+          title: 'Rate limits',
+          tiers: buildTiers((p) => p.code === 'custom' ? 'Contact us' : `${p.requestsPerMinute.toString()} requests/min, ${p.monthlyQuota.toString()} total for month`)
+        }
+      ]
+    },
+    {
+      title: 'Early adopter benefits',
+      features: [
+        {
+          title: 'Rate limits from your selected plan',
+          tiers: buildTiers((p) => p.code === 'pro' ? 'Free for the first 2 months' : (p.code === 'custom' ? 'Contact us' : false))
+        }
+      ]
     }
-  },
-  {
-    id: 'custom',
-    title: 'Custom',
-    price: 'Custom',
-    description: 'Best for large teams & enterprises',
-    button: {
-      label: 'Join waitlist',
-      color: 'neutral'
-    }
-  }
-]);
+  ];
+});
 
-const sections = ref<PricingTableSection[]>([
-  {
-    title: 'Features',
-    features: [
-      {
-        title: 'Always fresh data',
-        tiers: {
-          free: true,
-          pro: true,
-          custom: true
-        }
-      },
-      {
-        title: 'Access to 14 datasets',
-        tiers: {
-          free: true,
-          pro: true,
-          custom: true
-        }
-      },
-     {
-        title: 'Custom datasets',
-        tiers: {
-          free: false,
-          pro: 1,
-          custom: 'Contact us'
-        }
-      },
-      {
-        title: 'Rate limits',
-        tiers: {
-          free: '50 requests/min, 1000 total for month',
-          pro: '100 requests/min, 3000 total for month',
-          custom: 'Contact us'
-        }
-      },
-    ]
-  },
-  {
-    title: 'Early adopter benefits',
-    features: [
-      {
-        title: 'Rate limits from your selected plan',
-        tiers: {
-          free: false,
-          pro: 'Free for the first 2 months',
-          custom: 'Contact us'
-        }
-      }
-    ]
-  }
-]);
-
-// TODO: Register the user for the waitlist
 
 </script>
 
@@ -119,26 +98,50 @@ const sections = ref<PricingTableSection[]>([
         </template>
 
         <template #right>
-          <UButton
-            label="Create API Token"
-            variant="subtle"
-            color="primary"
-            size="sm"
-            trailing-icon="lucide:plus"
-            @click.prevent="onCreate"
-          />
+          <GeneralModal
+            :show-btn="true"
+            btn-size="sm"
+            :btn-color="'success'"
+            :btn-label="'Create API Token'"
+            :btn-icon="'lucide:plus'" 
+            title="Create API Token"
+            :msg="'Create New API Token'"
+          > 
+            <template #contentModal>
+              <FormsNewTokenForm />
+            </template>
+          </GeneralModal>
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body> 
+      <LazySpinner
+        v-if="pending && !data"
+        class="mt-10"
+      />
+      <UAlert
+        v-if="error"
+        title="Error!"
+        :description="error.message"
+        color="error"
+        variant="outline"
+        :actions="[
+          {
+            label: 'Refresh',
+            color: 'neutral',
+            variant: 'subtle',
+            onClick: () => refresh()
+          }
+        ]"
+      />
       <UPageHero
         title="IP Shield Public Preview"
         description="The standard plan is free and always will be. We are currently finalizing premium tiers for custom data hosting and expanded API rate limits. Register today to lock in an early-adopter credit for your first months of premium usage."
       />
 
       <UPricingTable
-        :tiers="tiers"
+        :tiers="tiers ?? []"
         :sections="sections"
         class="mb-20"
       />

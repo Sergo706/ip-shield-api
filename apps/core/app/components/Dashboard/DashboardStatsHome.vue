@@ -9,10 +9,10 @@ const props = withDefaults(defineProps<{
     quotaCount?: number;
     remainingCount?: number;
 }>(), {
-    tokensCount: 10,
-    requestsCount: 2000,
-    quotaCount: 2313,
-    remainingCount: 3131
+    tokensCount: 0,
+    requestsCount: 0,
+    quotaCount: 0,
+    remainingCount: 0
 });
 
 const stats = [{

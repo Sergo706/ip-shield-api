@@ -3,19 +3,19 @@
 import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui';
 
 
-
 const open = ref(false);
 const colorMode = useColorMode();
-
+const toast = useToast();
   
 const props = withDefaults(defineProps<{
-    badge: number | string | undefined;
+    badge?: number | string | undefined;
     user?: {
         avatar?: string;
         name?: string
     }
 }>(), {
   user: () => ({
+    badge: undefined,
     avatar: 'https://github.com/benjamincanac.png',
     name: 'John Doe'
   })
@@ -125,7 +125,36 @@ const items = computed<DropdownMenuItem[][]>(() => [
       label: 'Logout',
       icon: 'i-lucide-log-out',
       color: 'error',
-      type: 'link'  
+      type: 'link',
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      async onSelect() {
+          const event = useRequestEvent();
+          const fetcher = useRequestFetch();
+          const headers = useRequestHeaders();
+          interface LogoutResponse { ok: boolean; redirectTo?: string; reason?: string; data?: { ok: boolean } };
+
+          const res = await executeRequest<unknown>('/logout', 'POST', undefined, {
+            'Accept': 'application/json'
+          }, {}, {event, fetcher, headers}) as LogoutResponse;
+          if (res.ok && res.redirectTo) {
+            toast.add({
+              title: 'Success',
+              description: 'Successfully logged out!',
+              color: 'success',
+              type: 'foreground',
+              duration: 12000,
+            });
+             window.location.href = res.redirectTo ?? '/';
+             return;
+          } else {
+            toast.add({
+              title: 'Error',
+              description: res.reason ?? 'Error logging out!',
+              color: 'error',
+              duration: 12000,
+            });
+          }
+      }  
     }
 ]
 ]);

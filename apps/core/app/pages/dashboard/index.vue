@@ -1,27 +1,12 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { useAuthRedirect } from '~/composables/useAuthRedirect';
 import type { Period, Range } from '#layers/shared-layer/shared/types/TimePeriod';
 import { sub } from 'date-fns';
-import AuthApiModal from '~/components/Auth/AuthApiModal.vue';
-
-// await useAuthRedirect('/', undefined);
+import { useStats } from '~/composables/useStats';
 
 definePageMeta({
     layout: 'dashboard'
 });
-
-const onCreate = async () => {
-    const overlay = useOverlay();
-    const modal = overlay.create(AuthApiModal);
-    const instance = modal.open({
-        title: 'Create API Token',
-        msg: `Fill the form below to create a new token`,
-        action: 'create',
-    });
-   await instance.result;
-   return;
-};
 
 const range = shallowRef<Range>({
   start: sub(new Date(), { days: 14 }),
@@ -29,66 +14,33 @@ const range = shallowRef<Range>({
 });
 
 const period = ref<Period>('daily');
-const data = ref([
-  {
-    id: 4600,
-    created_at: new Date('2024-03-11T15:30:00'),
-    expires_at: new Date('2024-07-11T15:30:00'),
-    last_used: new Date('2024-04-01T09:12:00'),
-    totalUsageCount: 10000,
-    usage_count: 142,
-    restricted_to_ip_address: '1.1.1.1',
-    active: true,
-    name: 'james.anderson@example.com',
-  },
-  {
-    id: 4601,
-    created_at: new Date('2024-02-03T08:20:00'),
-    expires_at: null,
-    last_used: new Date('2024-04-21T21:44:00'),
-    totalUsageCount: 10000,
-    usage_count: 991,
-    restricted_to_ip_address: ['203.0.113.5', '203.0.113.9'],
-    active: true,
-    name: 'olivia.brown@example.com',
-  },
-  {
-    id: 4602,
-    created_at: new Date('2024-01-15T12:11:00'),
-    expires_at: new Date('2024-05-30T12:00:00'),
-    last_used: new Date('2024-04-27T05:31:00'),
-    totalUsageCount: 10000,
-    usage_count: 12,
-    restricted_to_ip_address: '198.51.100.44',
-    active: true,
-    name: 'sara.lee@example.com',
-  },
-  {
-    id: 4603,
-    created_at: new Date('2023-11-08T17:03:00'),
-    expires_at: null,
-    last_used: new Date('2024-04-29T13:17:00'),
-    totalUsageCount: 10000,
-    usage_count: 0,
-    restricted_to_ip_address: '192.0.2.10',
-    active: false,
-    name: 'inactive.token@example.com',
-  },
-  {
-    id: 4604,
-    created_at: new Date('2024-04-14T07:45:00'),
-    expires_at: new Date('2024-12-31T23:59:59'),
-    last_used: new Date('2024-04-30T11:09:00'),
-    totalUsageCount: 10000,
-    usage_count: 64,
-    restricted_to_ip_address: ['10.0.0.25', '10.0.0.26'],
-    active: true,
-    name: 'ops-automation@example.com',
-  }
-]);
+const { data: displayData, pending, refresh: refreshList } = await useListApiToken();
+const { data: statsData, pending: statsStatus, refresh: statsRefresh, error } = useStats();
+const hasNoSub = computed(() => error.value?.message === "User has no active subscription");
 
-// TODO: Composoble to create tokens
-// TODO: API
+const refresh = async () => { await refreshList(); await statsRefresh(); };
+const loading = computed(() => pending.value || statsStatus.value);
+
+const data = computed(() => {
+  const list = displayData.value?.tokenList;
+  if (!list || list.length === 0) return [];
+
+  const totalUsageCount = list.reduce((acc, curr) => acc + (curr.usage_count || 0), 0);
+
+  return list.map(token => ({
+    id: token.id,
+    name: token.name,
+    created_at: new Date(token.created_at),
+    expires_at: token.expires_at ? new Date(token.expires_at) : null,
+    last_used: token.last_used ? new Date(token.last_used) : null,
+    usage_count: token.usage_count || 0,
+    totalUsageCount,
+    restricted_to_ip_address: token.restricted_to_ip_address ?? [],
+    active: !token.expires_at || new Date(token.expires_at).getTime() > Date.now(),
+    privilege_type: token.privilege_type,
+  }));
+});
+
 </script>
 <template>
   <UDashboardPanel id="home">
@@ -99,14 +51,21 @@ const data = ref([
         </template>
 
         <template #right>
-          <UButton
-            label="Create API Token"
-            variant="subtle"
-            color="primary"
-            size="sm"
-            trailing-icon="lucide:plus"
-            @click.prevent="onCreate"
-          />
+          <GeneralModal
+            :show-btn="true"
+            btn-size="sm"
+            :btn-color="'success'"
+            :btn-label="'Create API Token'"
+            :btn-icon="'lucide:plus'" 
+            title="Create API Token"
+            :msg="'Create New API Token'"
+          > 
+            <template #contentModal>
+              <FormsNewTokenForm 
+                @submitted="refresh"
+              />
+            </template>
+          </GeneralModal>
         </template>
       </UDashboardNavbar>
     </template>
@@ -115,14 +74,19 @@ const data = ref([
     <template #body>
       <div class="flex flex-col gap-10 pb-4">
         <DashboardStatsHome
+          v-if="(displayData && statsData) && !hasNoSub"
+          :tokens-count="displayData?.totalValidTokens"
           :period="period"
+          :requests-count="statsData?.reqThisMonth"
           :range="range"
+          :quota-count="statsData?.totalQuota"
+          :remaining-count="statsData?.remainingThisMonth"
         />
 
         <DashboardHomeTokenTable
-          v-if="data.length > 0"
+          v-if="data && data.length > 0"
           :data="data"
-          class="flex-1 min-h-[350px]"
+          class="flex-1"
         />
         <UButton
           v-if="data.length > 0"
@@ -131,31 +95,43 @@ const data = ref([
           variant="subtle"
           label="Manage"
         />
-        <UEmpty 
-          v-else
+        <LazyUEmpty 
+          v-else-if="data.length === 0 && !loading"
           class="flex-1 min-h-[550px] grid place-content-center text-center"
           icon="i-lucide-key-round"
           title="No tokens yet" 
           description="It looks like you haven't created any tokens yet. Create one to get started."
           :ui="{root: 'ring-0'}"
-          :actions="[
-            {
-              icon: 'i-lucide-key-round',
-              label: 'Create token',
-              class: 'cursor-pointer',
-              variant: 'subtle',
-              color: 'primary',
-              onClick: () => onCreate()
-            },
-            {
-              icon: 'i-lucide-flask-conical',
-              label: 'Playground',
-              to: '/dashboard/playground',
-              class: 'cursor-pointer',
-              color: 'primary',
-              variant: 'outline'
-            }
-          ]"
+        > 
+          <template #actions>
+            <GeneralModal
+              :show-btn="true"
+              btn-size="md"
+              :btn-color="'success'"
+              :btn-label="'Create API Token'"
+              :btn-icon="'lucide:plus'" 
+              title="Create API Token"
+              :msg="'Create New API Token'"
+              @update:model-value="(val) => { if (!val) refresh() }"
+            > 
+              <template #contentModal>
+                <FormsNewTokenForm />
+              </template>
+            </GeneralModal>
+            <UButton
+              icon="i-lucide-flask-conical"
+              class="cursor-pointer"
+              to="/dashboard/playground"
+              variant="outline"
+              color="primary"
+              label="Playground"
+            />
+          </template>
+        </LazyUEmpty>
+        
+        <LazySpinner
+          v-if="loading && (!data || !statsData)"
+          class="mt-10"
         />
       </div>
     </template>

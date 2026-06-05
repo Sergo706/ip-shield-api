@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { getLocalTimeZone, today } from '@internationalized/date';
 import type { DateValue } from '@internationalized/date';
-import { newApiTokenSchema, type NewApiTokenInput } from '~~/shared/types/apiTokens';
+import { useApiTokens } from '~/composables/useTokens';
+import { newApiTokenSchema, type CreationSuccess, type NewApiTokenInput } from '~~/shared/types/apiTokens';
+import NewApiKey from '../NewApiKey.vue';
 
 const state: NewApiTokenInput = reactive({
     name: '',
@@ -9,12 +11,13 @@ const state: NewApiTokenInput = reactive({
     ipv4: [] as string[],
     expires: undefined as number | undefined
 });
-const errors = ref('');
+const errors = ref<string | undefined>('');
 
 const localTimeZone = getLocalTimeZone();
 const minExpiryDate = today(localTimeZone);
 const expiryModel = ref<DateValue | undefined>();
 const inputDate = useTemplateRef('inputDate');
+const emit = defineEmits(['submitted']);
 
 const getExpiryDuration = (value?: DateValue) => {
   if (!value) return undefined;
@@ -24,12 +27,24 @@ const getExpiryDuration = (value?: DateValue) => {
   return Math.max(expiresAt - Date.now(), 1);
 };
 
-const submit = async () => {
-    state.expires = getExpiryDuration(expiryModel.value);
-    await new Promise(res => setTimeout(res, 5000));
-    console.log(state);
-   // TODO: SEND etc
+const { createToken, error } = useApiTokens();
+const creationData = ref<CreationSuccess>();
+const success = ref(false);
 
+const submit = async () => {
+    errors.value = undefined;
+    state.expires = getExpiryDuration(expiryModel.value);
+    const data = await createToken(state);
+
+    if (!data?.value?.rawApiKey) {
+        errors.value = error.value;
+        return;
+    }
+
+    creationData.value = data.value;
+    success.value = true;
+    emit('submitted');
+    return;
 };
 
 </script>
@@ -39,6 +54,7 @@ const submit = async () => {
     class="w-full"
   >
     <UForm
+      v-if="!success"
       :schema="newApiTokenSchema"
       :state="state"
       :validate-on="[]"
@@ -160,13 +176,18 @@ const submit = async () => {
     </UForm>
     
     <UAlert 
-      v-if="errors"
+      v-if="errors && !success"
       class="mt-4 w-full"
       icon="i-lucide-circle-alert"
       color="error"
       title="Error!"
       :description="errors"
       variant="subtle"
+    />
+
+    <NewApiKey
+      v-if="success && creationData?.rawApiKey"
+      :raw-api-key="creationData.rawApiKey"
     />
   </div>
 </template>

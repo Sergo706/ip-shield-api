@@ -1,68 +1,14 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { personalSchema } from '~~/shared/types/auth';
-import type { FormSubmitEvent } from '@nuxt/ui';
-import z from 'zod';
-import AuthApiModal from '~/components/Auth/AuthApiModal.vue';
+import { useSettings } from '~/composables/useSettings';
 
-
-// await useAuthRedirect('/', undefined);
 definePageMeta({
-  layout: 'dashboard'
+    layout: 'dashboard'
 });
 
+const {updateNames, initEmailUpdate, name, lastname, loading } = useSettings();
 
-const onCreate = async () => {
-    const overlay = useOverlay();
-    const modal = overlay.create(AuthApiModal);
-    const instance = modal.open({
-        title: 'Create API Token',
-        msg: `Fill the form below to create a new token`,
-        action: 'create',
-
-    });
-   await instance.result;
-   return;
-};
-
-const toast = useToast();
-
-type PersonalSchema = z.output<typeof personalSchema>
-
-const success = ref(false);
-
-const state = reactive<PersonalSchema>({
-  firstname: '',
-  lastname: '',
-});
-
-function submit(event: FormSubmitEvent<PersonalSchema>) {
-  success.value = true;
-  Object.assign(state, event.data);
-}
-
-
-async function initEmailChange() {
-        const headers = useRequestHeaders();
-        const event = useRequestEvent();
-        const fetcher = useRequestFetch();
-        const result = await executeRequest<string>('/api/auth/change-email', 'POST', { "init": "1" }, {}, {}, { headers, event, fetcher });
-        if (!result.ok) {
-            toast.add({
-                title: "Error!",
-                color: 'error',
-                description: "Server error. Try again later"
-            });
-            return;
-        }
-
-        toast.add({
-            title: "Success!",
-            color: 'success',
-            description: "Check your email to continue"
-        });
-        return;
-    }
 
 </script>
 
@@ -75,14 +21,19 @@ async function initEmailChange() {
         </template>
 
         <template #right>
-          <UButton
-            label="Create API Token"
-            variant="subtle"
-            color="primary"
-            size="sm"
-            trailing-icon="lucide:plus"
-            @click.prevent="onCreate"
-          />
+          <GeneralModal
+            :show-btn="true"
+            btn-size="sm"
+            :btn-color="'success'"
+            :btn-label="'Create API Token'"
+            :btn-icon="'lucide:plus'" 
+            title="Create API Token"
+            :msg="'Create New API Token'"
+          > 
+            <template #contentModal>
+              <FormsNewTokenForm />
+            </template>
+          </GeneralModal>
         </template>
       </UDashboardNavbar>
     </template>
@@ -98,10 +49,10 @@ async function initEmailChange() {
           <UForm
             :schema="personalSchema"
             :validate-on="[]"
-            :loading-auto="true"
-            :state="state"
+            loading-auto
+            :state="{firstname: name, lastname}"
             class="flex w-full flex-col gap-2"
-            @submit="submit"
+            @submit="updateNames"
           >
             <div class="flex w-full flex-col gap-6">
               <UFormField
@@ -111,7 +62,7 @@ async function initEmailChange() {
                 class="w-full"
               >
                 <UInput
-                  v-model="state.firstname"
+                  v-model="name"
                   class="w-full"
                   variant="soft"
                   color="neutral"
@@ -127,7 +78,7 @@ async function initEmailChange() {
                 class="w-full"
               >
                 <UInput
-                  v-model="state.lastname"
+                  v-model="lastname"
                   class="w-full"
                   variant="soft"
                   color="neutral"
@@ -140,7 +91,7 @@ async function initEmailChange() {
                 type="submit"
                 color="primary"
                 variant="subtle"
-                loading-auto
+                :loading="loading"
                 size="md"
                 class="w-full justify-center px-6"
               >
@@ -149,16 +100,6 @@ async function initEmailChange() {
             </div>
           </UForm>
 
-          <UAlert
-            v-if="success"
-            class="w-full"
-            icon="i-lucide-rocket"
-            color="success"
-            title="Success!"
-            description="Your data have been updated successfully!"
-            variant="outline"
-          />
-          
           <USeparator class="mt-5" />
           <UPageCard
             title="Update email"
@@ -170,10 +111,10 @@ async function initEmailChange() {
             <template #footer>
               <UButton
                 label="Send link"
-                loading-auto
+                :loading="loading"
                 size="md"
                 variant="subtle"
-                @click.prevent="initEmailChange"
+                @click.prevent="initEmailUpdate"
               />
             </template>
           </UPageCard>

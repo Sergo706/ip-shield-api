@@ -33,3 +33,16 @@ export const ipRestrictionUpdate = z.object({
 
 export type NewApiTokenInput = z.infer<typeof newApiTokenSchema>;
 export type IpRestrictionUpdateInput = z.infer<typeof ipRestrictionUpdate>;
+
+export interface ApiTokenRotationSuccess {
+     msg: string;
+     newRawToken: string | undefined,
+     newExpiry: Date | null
+}
+
+export interface CreationSuccess {
+     rawApiKey: string | undefined,
+     expiresAt: Date | null
+}
+
+export type Revoke = string | { msg: string; invalidedTokenId: number; userId: number }

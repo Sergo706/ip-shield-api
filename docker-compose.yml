@@ -1,6 +1,7 @@
 services:
   auth:
-    image: sergio68/auth
+    image: jwtauth-service:latest
+    pull_policy: never
     read_only: true  
     restart: unless-stopped
     cap_drop: ["ALL"]
@@ -31,6 +32,91 @@ services:
         ipv4_address: 173.21.10.4
       # egress: 
       #   ipv4_address: 172.22.20.2
+  dashboard:
+     build:
+      context: .
+      dockerfile: ./docker/core/Dockerfile
+      target: development
+     pull_policy: never
+     read_only: true  
+     restart: unless-stopped
+     cap_drop: ["ALL"] 
+     user: 10001:10001
+     security_opt: 
+      - "no-new-privileges:true"
+     pids_limit: 200
+     volumes:
+      - ./auth-logs/core-app:/app/apps/core/app-logs/:rw
+     environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+     depends_on:
+       auth:
+         condition: service_healthy
+       mysql: 
+          condition: service_healthy
+     networks:
+      frontend:
+        ipv4_address: 173.21.10.5
+
+  migrations:
+     profiles: ["cli"]
+     build:
+      context: .
+      dockerfile: ./docker/core/Dockerfile
+      target: development
+     pull_policy: never
+     read_only: false  
+     restart: unless-stopped
+     cap_drop: ["ALL"] 
+     user: 10001:10001
+     security_opt: 
+      - "no-new-privileges:true"
+     pids_limit: 200
+     tmpfs:
+      - /tmp
+     volumes:
+      - ./auth-logs/core-app:/app/apps/core/app-logs/:rw
+     environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+     depends_on:
+       mysql: 
+          condition: service_healthy
+       auth:
+          condition: service_healthy
+     networks:
+      frontend:
+        ipv4_address: 173.21.10.6
+     
+  caddy:
+    build:
+      context: .
+      dockerfile: ./docker/caddy/Dockerfile
+    restart: always
+    security_opt: 
+      - "no-new-privileges:true"
+    read_only: true  
+    cap_drop: ["ALL"]
+    cap_add:
+    - "NET_BIND_SERVICE"
+    user: 10001:10001  
+    ports:
+    - "80:80"
+    - "443:443"
+    volumes:
+      - ./secrets/caddy:/etc/caddy:ro 
+      - caddy_data:/data
+      - caddy_config:/config
+    tmpfs: 
+      - /tmp:rw,noexec,nosuid,nodev,size=2m,uid=10001,gid=10001,mode=0700    
+    depends_on:
+      dashboard:
+        condition: service_healthy  
+    networks:
+      frontend:
+        ipv4_address: 173.21.10.2
+
   mysql: 
     image: mysql:latest
     restart: unless-stopped
@@ -86,6 +172,8 @@ volumes:
   app_data:
   bot-detector-data:
   email-data:
+  caddy_data:
+  caddy_config:
 networks: 
   backend: 
     internal: true

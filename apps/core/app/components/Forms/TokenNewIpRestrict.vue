@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { ipRestrictionUpdate, type IpRestrictionUpdateInput } from '~~/shared/types/apiTokens';
 
-const errors = ref('');
 const props = defineProps<{tokenId: number}>();
-
+const { updateIp, ipUpdateResult, error, isLoading } = useApiTokens();
 const state: IpRestrictionUpdateInput = reactive({
     tokenId: props.tokenId,
     ipv4: []
 });
-
+const emit = defineEmits(['submitted']);
 const submit = async () => {
-    await new Promise(res => setTimeout(res, 5000));
-    console.log(state);
-   // TODO: SEND etc
-
+  await updateIp(state.ipv4, state.tokenId);
+  emit('submitted');
+  return;
 };
 
 </script>
@@ -26,7 +24,7 @@ const submit = async () => {
       :schema="ipRestrictionUpdate"
       :state="state"
       :validate-on="[]"
-      :loading-auto="true"
+      :loading="isLoading"
       class="flex w-full flex-col gap-4"
       @submit="submit"
     >
@@ -54,7 +52,7 @@ const submit = async () => {
         type="submit"
         color="primary"
         variant="subtle"
-        loading-auto
+        :loading="isLoading"
         icon="i-lucide-shield-check"
         size="md"
         class="w-full cursor-pointer justify-center"
@@ -63,12 +61,21 @@ const submit = async () => {
       </UButton>
 
       <UAlert 
-        v-if="errors"
+        v-if="error"
         class="mt-4 w-full"
         icon="i-lucide-circle-alert"
         color="error"
         title="Error!"
-        :description="errors"
+        :description="error"
+        variant="subtle"
+      />
+      <UAlert 
+        v-if="ipUpdateResult"
+        class="mt-4 w-full"
+        icon="i-lucide-circle-alert"
+        color="success"
+        title="Success!"
+        :description="ipUpdateResult.msg"
         variant="subtle"
       />
     </UForm>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import type z from "zod";
 import { getCsrfToken, useAuthData } from '@riavzon/auth-h3client/client';
 import type { FormSubmitEvent } from "@nuxt/ui";
@@ -191,7 +192,7 @@ export async function onSendAuth(payload: FormSubmitEvent<LoginSchema | SignupSc
 
   const auth = await useAuthData();
 
-  if (auth.value.mfaRequired && !auth.value.authorized) {
+  if (auth.value && auth.value.mfaRequired && !auth.value.authorized) {
     return {
         ok: false,
         date: new Date().toISOString(),

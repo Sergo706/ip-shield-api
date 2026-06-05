@@ -1,0 +1,14 @@
+node_modules
+**/node_modules
+**/.nuxt
+**/.nitro
+**/.output
+coverage
+auth-logs
+logs
+rate-limit-data
+.git
+.github
+.vscode
+secrets
+*.log

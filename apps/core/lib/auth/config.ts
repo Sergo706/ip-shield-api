@@ -51,7 +51,7 @@ export const authConfig: Omit<AuthConfiguration, 'uStorage'> = {
         allowedMimes: ['image/png', 'image/jpeg', 'image/webp'],
         allowedExtensions: ['.png', '.jpg', '.jpeg', '.webp'],
     },
-    onSuccessRedirect: `http://${domain}:3001/dashboard`,
+    onSuccessRedirect: `https://${domain}/dashboard`,
     OAuthProviders: [{
         kind: 'oidc',
         name: 'google',
@@ -64,10 +64,10 @@ export const authConfig: Omit<AuthConfiguration, 'uStorage'> = {
             prompt: "consent",
             include_granted_scopes: "true"
         },
-        redirectUri: `http://${domain}:3001/oauth/callback/google`,
+        redirectUri: `https://${domain}/oauth/callback/google`,
         supportPKCE: true,
-        redirectUrlOnSuccess: `http://${domain}:3001/dashboard`,
-        redirectUrlOnError: `http://${domain}/`
+        redirectUrlOnSuccess: `https://${domain}/dashboard`,
+        redirectUrlOnError: `https://${domain}/`
     },
     {
        kind: 'oauth',
@@ -78,15 +78,15 @@ export const authConfig: Omit<AuthConfiguration, 'uStorage'> = {
        emailCallBack: githubEmailCallBack,
        clientId: env.OAUTH_GITHUB_CLIENT_ID,
        clientSecret: env.OAUTH_GITHUB_CLIENT_SECRET,
-       redirectUri: `https://${domain}:3001/oauth/callback/github`,
+       redirectUri: `https://${domain}/oauth/callback/github`,
        defaultScopes: ['read:user', 'user:email'],
        supportPKCE: true,
-       redirectUrlOnSuccess: `https://${domain}:3001/dashboard`,
-       redirectUrlOnError: `http://${domain}/`
+       redirectUrlOnSuccess: `https://${domain}/dashboard`,
+       redirectUrlOnError: `https://${domain}/`
     }
 ],
-    magicLinkRedirectPath: '/',
-    magicLinkBouncePath: '/bounce',
+    magicLinkRedirectPath: '/auth/verify',
+    magicLinkBouncePath: '/auth/bounce',
     enableFireWallBans: false,
     logLevel: 'debug' as const
 };
