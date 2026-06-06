@@ -1,42 +1,37 @@
 services:
   auth:
-    image: jwtauth-service:latest
-    pull_policy: never
+    image: sergio68/auth:latest
+    pull_policy: if_not_present
     read_only: true  
     restart: unless-stopped
     cap_drop: ["ALL"]
     user: 10001:10001
-    environment:
-      - SKIP_CONFIG_UNLINK=true
     volumes: 
       - ./auth-logs/server:/app/auth-logs:rw
       - ./auth-logs/server/bot-detector:/app/bot-detector-logs:rw
       - bot-detector-data:/app/node_modules/@riavzon/bot-detector/dist/_data-sources:rw
       - email-data:/app/dist/email-db:rw
-      - ./config.dev.json:/run/app/config.json
     tmpfs:
       - /run/app:rw,noexec,nosuid,nodev,uid=10001,gid=10001,size=1m
     pids_limit: 200
     depends_on:
       mysql:
         condition: service_healthy
-    # secrets:
-    #   - age_key
-    #   - encrypted_config
+    secrets:
+      - age_key
+      - encrypted_config
     security_opt:
       - "no-new-privileges:true"
-    ports:
-     - 10000:10000
     networks:
-      frontend:
-        ipv4_address: 173.21.10.4
-      # egress: 
-      #   ipv4_address: 172.22.20.2
+      backend:
+        ipv4_address: 173.20.5.2
+      egress: 
+        ipv4_address: 173.22.20.2
   dashboard:
      build:
       context: .
       dockerfile: ./docker/core/Dockerfile
-      target: development
+      target: production
      pull_policy: never
      read_only: true  
      restart: unless-stopped
@@ -44,12 +39,18 @@ services:
      user: 10001:10001
      security_opt: 
       - "no-new-privileges:true"
-     pids_limit: 200
+     tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,uid=10001,gid=10001,size=64m
      volumes:
       - ./auth-logs/core-app:/app/apps/core/app-logs/:rw
+      - data-sources:/app/data-sources:rw
+      - data-sources-cache:/home/appuser/.shield-base:rw
      environment:
       - DB_HOST=mysql
       - DB_PORT=3306
+      - DOMAIN=localhost
+      - CLIENT_LOG_DIR=/app/apps/core/app-logs
+      - DATA_SOURCES_DIR=/app/data-sources
      depends_on:
        auth:
          condition: service_healthy
@@ -58,6 +59,22 @@ services:
      networks:
       frontend:
         ipv4_address: 173.21.10.5
+      backend: 
+       ipv4_address: 173.20.5.3
+     secrets:
+      - auth_crypto_cookies
+      - auth_port_location
+      - auth_server_location
+      - hmac_client_id
+      - hmac_shared_secret
+      - oauth_github_client_id
+      - oauth_github_client_secret
+      - oauth_google_client_id
+      - oauth_google_client_secret
+      - mysql_user
+      - mysql_password
+      - mysql_database
+      - age_key_app
 
   migrations:
      profiles: ["cli"]
@@ -86,9 +103,22 @@ services:
        auth:
           condition: service_healthy
      networks:
-      frontend:
-        ipv4_address: 173.21.10.6
-     
+      backend: 
+       ipv4_address: 173.20.5.4
+     secrets:
+      - auth_crypto_cookies
+      - auth_port_location
+      - auth_server_location
+      - hmac_client_id
+      - hmac_shared_secret
+      - oauth_github_client_id
+      - oauth_github_client_secret
+      - oauth_google_client_id
+      - oauth_google_client_secret
+      - mysql_user
+      - mysql_password
+      - mysql_database
+      - age_key_app
   caddy:
     build:
       context: .
@@ -116,57 +146,88 @@ services:
     networks:
       frontend:
         ipv4_address: 173.21.10.2
-
+  alloy:
+    image: grafana/alloy:latest
+    restart: unless-stopped
+    networks:
+      - backend
+      - egress
+    pid: host
+    volumes:
+      - ./config.alloy:/etc/alloy/config.alloy:ro
+      - ./auth-logs:/logs/apps:ro
+      - /var/log:/logs/host:ro
+      - /var/log/journal:/var/log/journal:ro
+      - /run/log/journal:/run/log/journal:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
   mysql: 
-    image: mysql:latest
+    build: 
+      context: .
+      dockerfile: docker/mysql/Dockerfile
     restart: unless-stopped
     cap_drop: ["ALL"]
     user: "999:999"
-    environment:
-      - MYSQL_ROOT_PASSWORD=1234567890
-      - MYSQL_USER=sergio
-      - MYSQL_PASSWORD=1234567890
-      - MYSQL_DATABASE=ip_shield 
     security_opt: 
       - "no-new-privileges:true"
     volumes:
       - sql_db_ip_shield:/var/lib/mysql
-      - ./secrets/mysql:/etc/mysql/conf.d:ro 
     healthcheck:
       test: ["CMD-SHELL", "bash -lc 'exec 3<>/dev/tcp/127.0.0.1/3306'"]
       interval: 10s
       timeout: 8s 
       retries: 5
       start_period: 7m
-    tmpfs:
-      - /tmp/secrets-dec:rw,noexec,nosuid,nodev,size=2m,uid=999,gid=999,mode=0700     
-    # secrets:
-    #   - mysql_root_password
-    #   - mysql_user_password  
-    #   - mysql_user_name
-    #   - mysql_db_name
-    #   - age_key_app
-    ports: 
-      - 3310:3306
+    secrets:
+      - mysql_root_password
+      - mysql_user
+      - mysql_password  
+      - mysql_database
+      - age_key_app
     networks:
-      frontend:
-        ipv4_address: 173.21.10.3   
+      backend:
+        ipv4_address: 173.20.5.10  
 
-# secrets:
-#   age_key:
-#     file: ./secrets/auth/age_key
-#   encrypted_config:
-#     file: ./secrets/auth/config.json.age
-#   mysql_root_password:
-#     file: ./secrets/app/mysql/mysql_root_password.txt.age
-#   mysql_user_password:
-#     file: ./secrets/app/mysql/mysql_user_password.txt.age
-#   mysql_user_name:
-#     file: ./secrets/app/mysql/mysql_user_name.txt.age 
-#   mysql_db_name:
-#     file: ./secrets/app/mysql/mysql_db_name.txt.age
-#   age_key_app:
-#     file: ./age_key_app
+secrets:
+  age_key:
+    file: ./secrets/auth/age_key
+  encrypted_config:
+    file: ./secrets/auth/config.json.age
+  mysql_root_password:
+    file: ./secrets/app/mysql/mysql_root_password.age
+  mysql_user:
+    file: ./secrets/app/mysql/mysql_user.age
+  mysql_password:
+    file: ./secrets/app/mysql/mysql_password.age 
+  mysql_database:
+    file: ./secrets/app/mysql/mysql_database.age
+  age_key_app:
+    file: ./secrets/age_key_app
+  auth_crypto_cookies:
+    file: ./secrets/app/env/auth_crypto_cookies.age
+  auth_port_location:
+    file: ./secrets/app/env/auth_port_location.age
+  auth_server_location:
+    file: ./secrets/app/env/auth_server_location.age
+  hmac_client_id:
+    file: ./secrets/app/env/hmac_client_id.age
+  hmac_shared_secret:
+    file: ./secrets/app/env/hmac_shared_secret.age
+  oauth_github_client_id:
+    file: ./secrets/app/env/oauth_github_client_id.age
+  oauth_github_client_secret:
+    file: ./secrets/app/env/oauth_github_client_secret.age
+  oauth_google_client_id:
+    file: ./secrets/app/env/oauth_google_client_id.age
+  oauth_google_client_secret:
+    file: ./secrets/app/env/oauth_google_client_secret.age
+  
 volumes:
   sql_db_ip_shield:  
   app_data:
@@ -174,6 +235,8 @@ volumes:
   email-data:
   caddy_data:
   caddy_config:
+  data-sources:
+  data-sources-cache:
 networks: 
   backend: 
     internal: true

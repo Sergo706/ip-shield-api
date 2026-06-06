@@ -1,22 +1,7 @@
 import maxmind, { Reader, type Response } from 'maxmind';
 import { open, type RootDatabase } from 'lmdb';
 import type { BgpRecord, CityGeoRecord, GeoRecord, TorRecord, ThreatRecord, CrawlersRecord, ProxyRecord, UserAgentRecord, EmailListRecord } from '@riavzon/shield-base';
-import { resolvePath } from '@riavzon/utils/server';
-import path from 'node:path';
-
-
-const cwd = path.resolve(process.cwd(), 'data-sources');
-const searchDirs = [
-  process.env.DATA_SOURCES_DIR ?? '',
-  'data-sources',
-  '../data-sources',
-  '../../data-sources',  
-  cwd
-].filter(Boolean);
-
-function resolveDb(fileName: string): string {
-  return resolvePath(fileName, searchDirs);
-}
+import { resolveDb } from './dbsPath';
 
 export type ThreatRecordModified = ThreatRecord & { network: string }
 

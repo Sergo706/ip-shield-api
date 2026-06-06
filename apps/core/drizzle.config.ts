@@ -5,9 +5,9 @@ const env = z
   .object({
     DB_HOST: z.string().min(1),
     DB_PORT: z.string().min(1),
-    DB_USER: z.string().min(1),
-    DB_PASSWORD: z.string().min(1),
-    DB_NAME: z.string().min(1),
+    MYSQL_USER: z.string().min(1),
+    MYSQL_PASSWORD: z.string().min(1),
+    MYSQL_DATABASE: z.string().min(1),
   }) 
   .parse(process.env);
 
@@ -15,13 +15,13 @@ export default defineConfig({
   out: './lib/db/migration',
   schema: './lib/db/index.ts',
   dialect: 'mysql',
-  tablesFilter: ["plans", "plan_prices", "subscriptions"],
+  tablesFilter: ["plans", "plan_prices", "subscriptions", "early_access", "usage_rollup_monthly"],
   dbCredentials: {
     host: env.DB_HOST,
     port: Number(env.DB_PORT),
-    user: env.DB_USER,
-    password: env.DB_PASSWORD,
-    database: env.DB_NAME,
+    user: env.MYSQL_USER,
+    password: env.MYSQL_PASSWORD,
+    database: env.MYSQL_DATABASE,
   },
   casing: 'snake_case',
 });

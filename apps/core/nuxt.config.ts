@@ -38,9 +38,16 @@ export default defineNuxtConfig({
       }
     }
   },
-
+  nitro: {
+    preset: 'node-server'
+  },
   routeRules: {
-    '/': { prerender: true }
+    '/': { prerender: false },
+    'api/v1/**': {
+      cors: true,
+      headers: { 'access-control-allow-methods': 'GET' },
+      cache: false,
+    }
   },
 
   compatibilityDate: '2025-01-15',

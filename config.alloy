@@ -1,0 +1,224 @@
+loki.write "local_mesh" {
+  endpoint { 
+    url = "http://10.10.10.1:3100/loki/api/v1/push" 
+  }
+}
+
+local.file_match "app_logs" {
+  path_targets = [
+    // --- AUTH SERVICE LOGS ---
+    { "__path__" = "/logs/apps/server/info.log",  log_source = "auth-info" },
+    { "__path__" = "/logs/apps/server/errors.log", log_source = "auth-errors" },
+    { "__path__" = "/logs/apps/server/warn.log",  log_source = "auth-warnings" },
+    { "__path__" = "/logs/apps/server/http.log",  log_source = "auth-http" },
+    { "__path__" = "/logs/apps/server/bot-detector/info.log",  log_source = "bot-detector" },
+
+    // --- DASHBOARD LOGS ---
+    { "__path__" = "/logs/apps/core-app/info.log",  log_source = "app-info" },
+    { "__path__" = "/logs/apps/core-app/errors.log",  log_source = "app-errors" },
+    { "__path__" = "/logs/apps/core-app/warn.log",  log_source = "app-warnings" },
+    { "__path__" = "/logs/apps/core-app/http.log",  log_source = "app-http" },
+
+    // --- HOST OS LOGS ---
+    { "__path__" = "/logs/host/syslog", host = "ip-shield", log_source = "system-syslog" },
+    { "__path__" = "/logs/host/auth.log", host = "ip-shield", log_source = "system-authentication" },
+    { "__path__" = "/logs/host/ufw.log", host = "ip-shield", log_source = "system-ufw" },
+    { "__path__" = "/logs/host/apt/*.log", host = "ip-shield", log_source = "system-packages" },
+    { "__path__" = "/logs/host/kern.log", host = "ip-shield", log_source = "system-kernel" },
+    { "__path__" = "/logs/host/unattended-upgrades/*.log", host = "ip-shield", log_source = "system-unattended" },
+    { "__path__" = "/logs/host/dpkg.log", host = "ip-shield", log_source = "system-dpkg" },
+
+  ]
+}
+
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "docker_logs" {
+  targets = discovery.docker.containers.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_log_stream"]
+    target_label  = "stream"
+  }
+  rule {
+    target_label  = "host"
+    replacement   = "ip-shield"
+  }
+}
+
+loki.source.docker "docker_scrape" {
+  host  = "unix:///var/run/docker.sock"
+  targets = discovery.relabel.docker_logs.output
+  forward_to = [loki.write.local_mesh.receiver]
+}
+
+discovery.relabel "file_log_targets" {
+  targets = local.file_match.app_logs.targets
+  rule {
+    target_label = "host"
+    replacement  = "ip-shield"
+  }
+}
+
+loki.process "json_parser" {
+  forward_to = [loki.write.local_mesh.receiver]
+
+  stage.match {
+    selector = "{log_source=~\"auth-.*|app-.*|bot-.*\"}"
+    
+    stage.json {
+      expressions = {
+        "raw_level" = "level",
+        "app_service" = "service",
+        "app_branch" = "branch",
+        "app_type" = "type",
+      }
+    }
+
+    stage.template {
+      source = "raw_level"
+      template = "{{ if eq .Value \"10\" }}trace{{ else if eq .Value \"20\" }}debug{{ else if eq .Value \"30\" }}info{{ else if eq .Value \"40\" }}warn{{ else if eq .Value \"50\" }}error{{ else if eq .Value \"60\" }}fatal{{ else }}{{ .Value }}{{ end }}"
+    }
+
+    stage.labels {
+      values = {
+        "level" = "raw_level",
+        "service" = "app_service",
+        "branch" = "app_branch",
+        "type" = "app_type",
+      }
+    }
+  }
+}
+
+loki.source.file "app_logs_scrape" {
+  targets  = discovery.relabel.file_log_targets.output
+  forward_to = [loki.process.json_parser.receiver]
+}
+
+loki.source.journal "systemd_journal" {
+  format_as_json = true
+  max_age = "12h"
+  forward_to = [loki.relabel.journal.receiver]
+}
+
+loki.relabel "journal" {
+  forward_to = [loki.write.local_mesh.receiver]
+  
+  rule {
+    source_labels = ["__journal__systemd_unit"]
+    target_label  = "unit" 
+  }
+  rule { 
+    source_labels = ["__journal__systemd_unit"]
+    target_label  = "svc" 
+  }
+  rule {
+    source_labels = ["__journal__systemd_unit"]
+    regex  = "^.*.service$"
+    action = "keep"
+  }
+  rule { 
+    source_labels = ["__journal_priority"]
+    target_label  = "priority" 
+  } 
+  rule { 
+    source_labels = ["__journal_priority_keyword"]
+    target_label  = "severity" 
+  }
+  rule { 
+    source_labels = ["__journal__systemd_user_unit"]
+    target_label  = "user_unit" 
+  }
+  rule { 
+    source_labels = ["__journal__transport"]
+    target_label  = "transport" 
+  }
+  rule {
+    target_label  = "host"
+    replacement   = "ip-shield"
+  }
+}
+
+prometheus.remote_write "central" {
+  endpoint { url = "http://10.10.10.1:9090/api/v1/write" }
+}
+
+
+prometheus.exporter.unix "node" {
+  procfs_path = "/host/proc"
+  sysfs_path  = "/host/sys"
+  rootfs_path = "/rootfs"
+}
+
+discovery.relabel "node_targets" {
+  targets = prometheus.exporter.unix.node.targets
+  rule { 
+    action = "replace"
+    target_label = "host"     
+    replacement  = "ip-shield" 
+  }  
+  rule { 
+    action = "replace" 
+    target_label = "instance" 
+    replacement  = "ip-shield" 
+  }
+  rule { 
+    action = "replace" 
+    target_label = "job" 
+    replacement = "node" 
+  }
+  rule { 
+    action = "replace" 
+    target_label = "source" 
+    replacement = "alloy-frontend" 
+  }
+}
+
+prometheus.scrape "node" {
+  job_name = "node"
+  targets = discovery.relabel.node_targets.output
+  scrape_interval = "7s"
+  scrape_timeout  = "6s"
+  forward_to  = [prometheus.remote_write.central.receiver]
+}
+
+
+prometheus.exporter.cadvisor "cad" {
+  docker_host      = "unix:///var/run/docker.sock"
+  storage_duration = "5m"
+}
+
+discovery.relabel "cad_targets" {
+  targets = prometheus.exporter.cadvisor.cad.targets
+  rule { 
+    action = "replace" 
+    target_label = "host"     
+    replacement  = "ip-shield" 
+  }
+  rule { 
+    action = "replace" 
+    target_label = "instance" 
+    replacement  = "ip-shield" 
+  }
+  rule { 
+    action = "replace" 
+    target_label = "source" 
+    replacement  = "alloy-frontend" 
+  }
+}
+
+prometheus.scrape "cad" {
+  job_name = "cad-v2"
+  targets = discovery.relabel.cad_targets.output
+  scrape_interval = "7s"
+  scrape_timeout  = "6s"
+  forward_to = [prometheus.remote_write.central.receiver]
+}
