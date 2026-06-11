@@ -1,6 +1,10 @@
-import { defineStrictVueConfig } from '@riavzon/utils/eslint/strict/vue';
+import { defineStrictVueConfig } from "@riavzon/utils/eslint/strict/vue"
+import { fileURLToPath } from "url"
+import { dirname } from "path"
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default defineStrictVueConfig({
-    rootDir: import.meta.dirname,
-    extraIgnores: ['*.config.*'],
+    rootDir: __dirname,
+    extraIgnores: ['*.config.*', 'dist/**', '.nuxt/**']
 })

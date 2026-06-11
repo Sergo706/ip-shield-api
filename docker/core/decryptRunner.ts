@@ -22,7 +22,9 @@ async function run() {
       'OAUTH_GOOGLE_CLIENT_ID',
       'OAUTH_GOOGLE_CLIENT_SECRET',
       'OAUTH_GITHUB_CLIENT_ID',
-      'OAUTH_GITHUB_CLIENT_SECRET'
+      'OAUTH_GITHUB_CLIENT_SECRET',
+      'TURNSTILE',
+      'RESEND_API_KEY'
     ],
     '/run/secrets/age_key_app', 
     '/run/secrets'

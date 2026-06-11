@@ -1,0 +1,140 @@
+{
+    "links": [
+        {
+            "label": "API Products",
+            "icon": "i-lucide-box",
+            "nested": true,
+            "children": [
+                {
+                    "label": "Proxy & VPN Detection",
+                    "to": "/proxy-vpn-detection",
+                    "description": "Identify proxies and VPN networks",
+                    "icon": "i-lucide-shield-alert"
+                },
+                {
+                    "label": "Tor Exit Nodes",
+                    "to": "/tor-exit-nodes",
+                    "description": "Block Tor anonymity network traffic",
+                    "icon": "i-lucide-eye-off"
+                },
+                {
+                    "label": "Granular Geolocation",
+                    "to": "/granular-geolocation",
+                    "description": "Highly accurate location mapping",
+                    "icon": "i-lucide-map-pin"
+                },
+                {
+                    "label": "Threat Scoring System",
+                    "to": "/threat-scoring-system",
+                    "description": "Unified traffic risk score",
+                    "icon": "i-lucide-activity"
+                },
+                {
+                    "label": "ASN & Carrier Data",
+                    "to": "/asn-carrier-data",
+                    "description": "Identify autonomous systems",
+                    "icon": "i-lucide-server"
+                },
+                {
+                    "label": "Disposable Email Check",
+                    "to": "/disposable-email-check",
+                    "description": "Detect temporary email domains",
+                    "icon": "i-lucide-mail"
+                },
+                {
+                    "label": "User Agent Parser",
+                    "to": "/user-agent-bot-parser",
+                    "description": "Identify bots and crawlers",
+                    "icon": "i-lucide-bot"
+                }
+            ]
+        },
+        {
+            "label": "Pricing",
+            "to": "/pricing",
+            "icon": "i-lucide-credit-card",
+            "nested": false
+        },
+        {
+            "label": "Docs",
+            "to": "/docs",
+            "icon": "i-lucide-book-open",
+            "nested": true,
+            "children": [
+                {
+                    "label": "Getting Started",
+                    "to": "/docs",
+                    "description": "Learn how to setup and use IP Shield",
+                    "icon": "i-lucide-rocket"
+                },
+                {
+                    "label": "All Endpoints",
+                    "to": "/docs/endpoints",
+                    "description": "Reference for all IP Shield REST API endpoints",
+                    "icon": "i-lucide-plug"
+                },
+                {
+                    "label": "Network API",
+                    "to": "/docs/endpoints/network",
+                    "description": "Network intelligence and routing data",
+                    "icon": "i-lucide-network"
+                },
+                {
+                    "label": "Summary API",
+                    "to": "/docs/endpoints/summary",
+                    "description": "Full IP intelligence summary",
+                    "icon": "i-lucide-bar-chart-2"
+                },
+                {
+                    "label": "Lookup IP API",
+                    "to": "/docs/endpoints/lookup/ip",
+                    "description": "Single IP data lookup",
+                    "icon": "i-lucide-search"
+                },
+                {
+                    "label": "Geo Check API",
+                    "to": "/docs/endpoints/check/geo",
+                    "description": "Check geographic location",
+                    "icon": "i-lucide-map-pin"
+                },
+                {
+                    "label": "Email Domain Check API",
+                    "to": "/docs/endpoints/check/email-domain",
+                    "description": "Verify disposable email domains",
+                    "icon": "i-lucide-mail"
+                },
+                {
+                    "label": "User Agent Check API",
+                    "to": "/docs/endpoints/check/user-agent",
+                    "description": "Detect malicious user agents",
+                    "icon": "i-lucide-monitor"
+                }
+            ]
+        },
+        {
+            "label": "Resources",
+            "icon": "i-lucide-library",
+            "nested": true,
+            "children": [
+                {
+                    "label": "About Us",
+                    "to": "/about",
+                    "icon": "i-lucide-info",
+                    "description": "Learn more about IP Shield and our mission"
+                },
+                {
+                    "label": "Blog",
+                    "to": "/blog",
+                    "icon": "i-lucide-newspaper",
+                    "description": "Latest news, updates, and security articles"
+                },
+                {
+                    "label": "Contact Us",
+                    "to": "/contact",
+                    "description": "Get in touch with our support team",
+                    "icon": "i-lucide-mail"
+                }
+            ]
+        }
+    ]
+}

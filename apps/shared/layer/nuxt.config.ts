@@ -33,6 +33,9 @@ export default defineNuxtConfig({
       ]
     }
   },
+  colorMode: {
+    preference: 'dark'
+  },
   icon: {
     customCollections: [
       {
@@ -47,3 +50,4 @@ export default defineNuxtConfig({
     provider: 'iconify',
   },
 })
+

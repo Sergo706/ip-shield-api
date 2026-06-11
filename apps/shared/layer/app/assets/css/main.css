@@ -2,13 +2,10 @@
 @import "@nuxt/ui";
 
 
-@media screen and (width < 1024px) {
-
-    :root,
-    html,
-    body {
-        overflow-x: hidden !important;
-    }
+:root,
+html,
+body {
+    overflow-x: hidden !important;
 }
 
 @theme static {
@@ -164,4 +161,26 @@ code:not(pre code) {
 .dark [class*="[counter-reset:step]"] h3::before,
 .dark [class*="[counter-reset:step]"] h4::before {
     color: white !important;
+}
+
+@utility bg-grid-white {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(255 255 255 / 0.05)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
+}
+
+@layer components {
+    .linebreak {
+        position: relative;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: auto;
+        width: 100%;
+        height: 1px;
+        margin: 0 auto;
+        background-image: linear-gradient(96.18deg, rgba(215, 196, 255, 0) 10%, rgba(200, 200, 200, 0.24) 50%, rgba(215, 196, 255, 0) 90%);
+    }
+
+    .text-white-shadow {
+        text-shadow: 0 4px 10px rgba(0, 87, 255, .2), 0 -4px 10px rgba(255, 90, 0, .15), 0 0 30px rgba(255, 255, 255, .2);
+    }
 }

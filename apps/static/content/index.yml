@@ -1,0 +1,122 @@
+title: The Ultimate IP Intelligence API
+description: Secure your application with blazing-fast edge-native IP intelligence. Instantly detect proxies, VPNs, Tor nodes, and malicious bots.
+seo:
+  title: IP Shield - Fast & Reliable IP Intelligence API
+  description: Secure your application with blazing-fast edge-native IP intelligence. Instantly detect proxies, VPNs, Tor nodes, and malicious bots.
+navigation: false
+hero:
+  badge: V1
+  links:
+    - label: Get API Key
+      icon: i-lucide-key
+      to: /account
+      size: xl
+    - label: View Documentation
+      trailingIcon: i-lucide-arrow-right
+      color: primary
+      variant: subtle
+      to: /docs
+      size: xl
+sections:
+  - title: Detect Proxies, VPNs & Geolocation 
+    description: Enrich any IP with geolocation, timezone, ASN, organization, company, abuse contacts, security signals, and hostnames via a single endpoint.
+    icon: i-lucide-globe
+    orientation: horizontal
+    features:
+      - title: Proxy & VPN Detection
+        icon: i-lucide-shield-alert
+      - title: Tor Exit Nodes
+        icon: i-lucide-eye-off
+      - title: Granular Geolocation
+        icon: i-lucide-map-pin
+      - title: ASN & Carrier Data
+        icon: i-lucide-server
+    links:
+      - label: Create Free Account
+        to: /account
+        icon: i-lucide-rocket
+        size: xl
+      - label: Read the Docs
+        to: /docs
+        color: primary
+        variant: subtle
+        trailingIcon: i-lucide-arrow-right
+        size: xl
+  - title: One API Call. Complete Intelligence. 
+    description: Enrich any IP, check for suspicious user agents, detect disposable emails, and get actionable data for your app.
+    icon: i-lucide-globe
+    orientation: vertical
+    features:
+      - title: Full IP Lookup
+        description: Comprehensive IP enrichment including location, ASN, and threats.
+        icon: i-lucide-search
+      - title: IP Intelligence
+        description: Specialized proxy, VPN, Tor, and malicious bot detection.
+        icon: i-lucide-shield-alert
+      - title: Geolocation Check
+        description: Fast geolocation data including country, city, and timezone.
+        icon: i-lucide-map-pin
+      - title: Email Domain Check
+        description: Detect disposable, free, or temporary email addresses.
+        icon: i-lucide-mail
+      - title: User Agent Parser
+        description: Parse user agents and flag automated scraping tools.
+        icon: i-lucide-monitor-smartphone
+      - title: Detect SEO Bots
+        description: Identify and categorize search engine crawlers like Googlebot and Bingbot to manage legitimate traffic.
+        icon: i-lucide-bot
+features:
+  title: Comprehensive Threat Intelligence
+  description: Everything you need to evaluate the risk of an incoming connection, updated in real-time.
+  items:
+    - title: Proxy & VPN Detection
+      description: Accurately identify residential proxies, datacenter IPs, and commercial VPN networks.
+      icon: i-lucide-shield-alert
+      orientation: horizontal
+      to: /proxy-vpn-detection
+      target: _self
+    - title: Tor Exit Nodes
+      description: Block or flag traffic originating from the Tor anonymity network.
+      icon: i-lucide-eye-off
+      to: /tor-exit-nodes
+      target: _self
+    - title: Granular Geolocation
+      description: Receive highly accurate country, city, and timezone mapping to localize user experiences instantly.
+      icon: i-lucide-map-pin
+      to: /granular-geolocation
+      target: _self
+    - title: Threat Scoring System
+      description: Combine multiple vectors into a single risk score to dynamically adjust login friction.
+      icon: i-lucide-activity
+      to: /threat-scoring-system
+      target: _self
+    - title: ASN & Carrier Data
+      description: Retrieve the exact Autonomous System Number and internet service provider details behind any IP address.
+      icon: i-lucide-server
+      to: /asn-carrier-data
+      target: _self
+    - title: Disposable Email Check
+      description: Instantly detect temporary, disposable, and free email domains to prevent spam signups.
+      icon: i-lucide-mail
+      to: /disposable-email-check
+      target: _self
+    - title: User Agent & Bot Parser
+      description: Parse user agents and cross-verify IPs to identify legitimate search engine crawlers and flag malicious scrapers.
+      icon: i-lucide-bot
+      orientation: horizontal
+      to: /user-agent-bot-parser
+      target: _self
+cta:
+  title: Secure your app today
+  description: Sign up for free and get 1000 requests per month, no credit card required.
+  links:
+    - label: Create Free Account
+      to: /account
+      icon: i-lucide-user-plus
+      size: xl
+    - label: Docs
+      to: /docs
+      color: primary
+      variant: subtle
+      trailingIcon: i-lucide-arrow-right
+      size: xl

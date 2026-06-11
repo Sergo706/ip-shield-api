@@ -16,13 +16,15 @@
     "@nuxt/image": "catalog:",
     "@nuxt/ui": "catalog:",
     "@nuxtjs/seo": "catalog:",
+    "@vueuse/nuxt": "catalog:",
+    "@nuxtjs/turnstile": "catalog:",
+    "better-sqlite3": "12.9.0",
     "nuxt": "catalog:",
     "tailwindcss": "catalog:",
-    "better-sqlite3": "12.9.0"
+    "ufo": "^1.6.4",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "nuxt-feedme": "2.1.0",
-    "nuxt-llms": "0.2.0",
     "@iconify-json/lucide": "1.2.104",
     "@iconify-json/simple-icons": "1.2.80",
     "@nuxt/fonts": "catalog:",
@@ -32,6 +34,8 @@
     "@types/node": "^25.6.0",
     "eslint": "10.2.1",
     "eslint-plugin-vue": "10.9.0",
+    "nuxt-feedme": "2.1.0",
+    "nuxt-llms": "0.2.0",
     "typescript": "catalog:",
     "typescript-eslint": "8.59.1",
     "vue-tsc": "3.2.7"
