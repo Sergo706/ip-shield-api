@@ -124,7 +124,7 @@ async function onSubmit() {
           <UInput
             v-model="state.subject"
             class="w-full"
-            placeholder="Project inquiry"
+            placeholder="Subject"
           />
         </UFormField>
 
@@ -138,7 +138,7 @@ async function onSubmit() {
             autoresize
             class="w-full"
             :rows="4"
-            placeholder="Lets work together!"
+            placeholder="You message..."
           />
         </UFormField>
         <NuxtTurnstile 

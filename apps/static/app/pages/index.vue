@@ -179,7 +179,7 @@ const lookup = ref(`{
           :key="i"
           :class="[
             i === 0 ? 'lg:col-span-2' : '',
-            i === page.features.items.length - 1 ? 'lg:col-span-2' : ''
+            i === page.features.items.length - 1 ? 'lg:col-span-3' : ''
           ]"
           spotlight
           variant="subtle"

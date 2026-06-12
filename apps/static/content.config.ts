@@ -112,6 +112,7 @@ export default defineContentConfig({
         hero: z.object({
           badge: z.string().optional(),
           image: createImageSchema().optional(),
+          json: z.string().optional(),
           orientation: orientationEnum.optional(),
         }).optional(),
         hasMarkDownContent: z.boolean(),

@@ -69,10 +69,15 @@ features:
   title: Comprehensive Threat Intelligence
   description: Everything you need to evaluate the risk of an incoming connection, updated in real-time.
   items:
+    - title: Full IP Lookup
+      description: Enrich any IP with geolocation, ASN, proxy detection, Tor status, and threat intelligence via a single endpoint.
+      icon: i-lucide-globe
+      orientation: horizontal
+      to: /full-ip-lookup
+      target: _self
     - title: Proxy & VPN Detection
       description: Accurately identify residential proxies, datacenter IPs, and commercial VPN networks.
       icon: i-lucide-shield-alert
-      orientation: horizontal
       to: /proxy-vpn-detection
       target: _self
     - title: Tor Exit Nodes
@@ -103,8 +108,12 @@ features:
     - title: User Agent & Bot Parser
       description: Parse user agents and cross-verify IPs to identify legitimate search engine crawlers and flag malicious scrapers.
       icon: i-lucide-bot
-      orientation: horizontal
       to: /user-agent-bot-parser
+      target: _self
+    - title: Verified Bots & Crawlers
+      description: Identify legitimate search engine crawlers using official geofeeds without slow DNS lookups.
+      icon: i-lucide-check-circle
+      to: /verified-bots-crawlers
       target: _self
 cta:
   title: Secure your app today

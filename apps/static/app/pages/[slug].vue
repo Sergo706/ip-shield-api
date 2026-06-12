@@ -1,6 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { withLeadingSlash } from 'ufo';
+import JsonSnippet from '~/components/JsonSnippet.vue';
 
 
 
@@ -115,13 +116,13 @@ if (import.meta.server) {
       
       <template #default>
         <div
-          v-if="!page.hero.image"
+          v-if="!page.hero.image && !page.hero.json"
           class="hidden lg:flex items-center justify-center w-full h-full lg:pl-8 mt-12 lg:mt-0"
         >
           <AboutSvg />
         </div>
         <WindowFrame
-          v-else
+          v-else-if="page.hero.image && !page.hero.json"
           :title="page.title"
           :animate="true"
         >
@@ -134,6 +135,14 @@ if (import.meta.server) {
             quality="90"
           />
         </WindowFrame>
+
+        <WindowFrame
+          v-else-if="page.hero.json"
+          :title="page.title"
+          :animate="true"
+        >
+          <JsonSnippet :data="page.hero.json" />
+        </WindowFrame>
       </template>
     </UPageHero>
 
@@ -144,6 +153,7 @@ if (import.meta.server) {
       :description="section.description"
       :icon="section.icon"
       :orientation="section.orientation"
+      :reverse="section.reverse"
       :features="section.features"
       :links="section.links"
       :ui="{ root: 'relative overflow-hidden' }"

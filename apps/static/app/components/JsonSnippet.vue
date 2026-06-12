@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-const props = defineProps<{ data: string }>();
+const props = defineProps<{ data?: string }>();
 
 const highlightedJson = computed(() => {
   if (!props.data) return '';
@@ -13,5 +13,12 @@ const highlightedJson = computed(() => {
 </script>
 
 <template>
-  <pre class="text-blue-300 p-3 sm:p-4 rounded-md bg-gray-900/60 overflow-x-auto hide-scrollbar text-[10px] sm:text-xs leading-relaxed border border-gray-800/50"><code v-html="highlightedJson" /></pre>
+  <pre class="text-blue-300 p-3 sm:p-4 rounded-md bg-gray-900/60 overflow-x-auto hide-scrollbar text-[10px] sm:text-xs leading-relaxed border border-gray-800/50">
+    <code 
+      v-if="data" 
+      v-html="highlightedJson" 
+    />
+    <code v-else><slot />
+    </code>
+    </pre>
 </template>

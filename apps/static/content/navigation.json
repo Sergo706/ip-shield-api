@@ -6,6 +6,12 @@
             "nested": true,
             "children": [
                 {
+                    "label": "Full IP Lookup",
+                    "to": "/full-ip-lookup",
+                    "description": "Enrich any IP with complete intelligence",
+                    "icon": "i-lucide-globe"
+                },
+                {
                     "label": "Proxy & VPN Detection",
                     "to": "/proxy-vpn-detection",
                     "description": "Identify proxies and VPN networks",
@@ -44,8 +50,14 @@
                 {
                     "label": "User Agent Parser",
                     "to": "/user-agent-bot-parser",
-                    "description": "Identify bots and crawlers",
+                    "description": "Parse messy HTTP headers",
                     "icon": "i-lucide-bot"
+                },
+                {
+                    "label": "Verified Bots",
+                    "to": "/verified-bots-crawlers",
+                    "description": "Identify legitimate search engine crawlers",
+                    "icon": "i-lucide-check-circle"
                 }
             ]
         },
@@ -69,7 +81,7 @@
                 },
                 {
                     "label": "All Endpoints",
-                    "to": "/docs/endpoints",
+                    "to": "/docs/endpoints/email-domain-check",
                     "description": "Reference for all IP Shield REST API endpoints",
                     "icon": "i-lucide-plug"
                 },
@@ -87,25 +99,25 @@
                 },
                 {
                     "label": "Lookup IP API",
-                    "to": "/docs/endpoints/lookup/ip",
+                    "to": "/docs/endpoints/lookup-ip",
                     "description": "Single IP data lookup",
                     "icon": "i-lucide-search"
                 },
                 {
                     "label": "Geo Check API",
-                    "to": "/docs/endpoints/check/geo",
+                    "to": "/docs/endpoints/geo-check",
                     "description": "Check geographic location",
                     "icon": "i-lucide-map-pin"
                 },
                 {
                     "label": "Email Domain Check API",
-                    "to": "/docs/endpoints/check/email-domain",
+                    "to": "/docs/endpoints/email-domain-check",
                     "description": "Verify disposable email domains",
                     "icon": "i-lucide-mail"
                 },
                 {
                     "label": "User Agent Check API",
-                    "to": "/docs/endpoints/check/user-agent",
+                    "to": "/docs/endpoints/user-agent-check",
                     "description": "Detect malicious user agents",
                     "icon": "i-lucide-monitor"
                 }

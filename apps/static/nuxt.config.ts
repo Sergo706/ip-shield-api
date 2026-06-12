@@ -142,7 +142,7 @@ export default defineNuxtConfig({
             light: 'light-plus',
             dark: 'dracula'
           },
-          langs: ["bash"]
+          langs: ["bash", "http", "json"]
         },
         }
     }
