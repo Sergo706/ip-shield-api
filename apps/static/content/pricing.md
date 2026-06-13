@@ -10,7 +10,7 @@ cta:
   description: Join our public preview today and lock in your early adopter credit for your first months of premium usage.
   links:
     - label: Register Now
-      to: 'https://ip-shield.com/dashboard/plans'
+      to: 'https://ip-shield.riavzon.com/dashboard/plans'
       color: primary
       size: lg
       icon: i-lucide-arrow-right
@@ -27,7 +27,7 @@ tiers:
     billingCycle: '/month'
     button:
       label: 'Join waitlist'
-      to: 'https://ip-shield.com/dashboard/plans'
+      to: 'https://ip-shield.riavzon.com/dashboard/plans'
       target: '_blank'
   - id: 'pro'
     title: 'PRO'
@@ -36,7 +36,7 @@ tiers:
     billingCycle: '/month'
     button:
       label: 'Join waitlist'
-      to: 'https://ip-shield.com/dashboard/plans'
+      to: 'https://ip-shield.riavzon.com/dashboard/plans'
       target: '_blank'
   - id: 'custom'
     title: 'CUSTOM'
@@ -45,7 +45,7 @@ tiers:
     billingCycle: 'custom'
     button:
       label: 'Join waitlist'
-      to: 'https://ip-shield.com/dashboard/plans'
+      to: 'https://ip-shield.riavzon.com/dashboard/plans'
       target: '_blank'
 sections:
   - title: 'Features'

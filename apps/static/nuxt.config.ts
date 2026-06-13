@@ -33,7 +33,8 @@ export default defineNuxtConfig({
     prerender: {
       autoSubfolderIndex: false,
       crawlLinks: true,
-      routes: ['/', '/sitemap.xml', '/feed.xml', '/feed.atom', '/feed.json']
+      routes: ['/', '/sitemap.xml', '/feed.xml', '/feed.atom', '/feed.json', '/429'],
+      ignore: ['/account']
     },
     preset: "static",
   },
@@ -42,14 +43,14 @@ export default defineNuxtConfig({
     fallback: 'dark',
   },
   site: {
-    url: 'https://ip-shield.com/',
+    url: 'https://ip-shield.riavzon.com/',
     name: 'IP Shield',
     description: 'A comprehensive API for IP intelligence, threat detection, and bot mitigation.',
     indexable: true,
     defaultLocale: 'en',
   },
-      llms: {
-    domain: 'https://ip-shield.com',
+  llms: {
+    domain: 'https://ip-shield.riavzon.com',
     title: 'IP Shield',
     description: 'A robust API and dashboard for IP intelligence, threat detection, and bot mitigation.',
     sections: [
@@ -76,11 +77,44 @@ export default defineNuxtConfig({
       {
         title: 'Blog',
         description: 'Industry insights, platform updates, and tutorials are located at /blog'
+      },
+      {
+        title: 'The Author & Ecosystem',
+        description: 'IP Shield is part of the broader Riavzon ecosystem. The author of this platform and the ecosystem can be found and reached below.',
+        links: [
+          {
+            title: 'The Author of this ecosystem',
+            description: 'Main hub for the author of IP Shield and the Riavzon ecosystem.',
+            href: 'https://riavzon.com'
+          },
+          {
+            title: 'More From the Author',
+            description: 'Solana bots - A powerful desktop application and CLI for managing multiple wallets, executing mass token swaps, and running volume bots — all with your keys & data staying on your device on the Solana blockchain.',
+            href: 'https://solana.riavzon.com/'
+          }
+        ]
+      },
+      {
+        title: 'Fast Navigation Guide for LLMs',
+        description: 'To provide fast answers, avoid hitting the massive `/llms-full.txt` file right away. Every single page on this site has a raw markdown equivalent served under the `/raw/` directory. For example, to read the raw markdown for `/docs/endpoints/lookup-ip`, you can fetch `/raw/docs/endpoints/lookup-ip.md`. Use these direct raw markdown files for specific lookups, and only fall back to downloading `/llms-full.txt` if you absolutely cannot find a specific page.',
+        links: [
+          {
+            title: 'Example 1',
+            description: 'Here is an example to get the IP Lookup endpoint module in markdown. Original path for humans: https://ip-shield.riavzon.com/docs/endpoints/lookup-ip',
+            href: 'https://ip-shield.riavzon.com/raw/docs/endpoints/lookup-ip.md' 
+          },
+          {
+            title: 'Example 2',
+            description: 'Here is an example to get the User-Agent Check endpoint in markdown. Original path for humans: https://ip-shield.riavzon.com/docs/endpoints/user-agent-check',
+            href: 'https://ip-shield.riavzon.com/raw/docs/endpoints/user-agent-check.md' 
+          }
+        ]
       }
     ],
     notes: [
       'The API requires a valid x-api-key header for authentication.',
-      'Data sources are updated automatically on a daily schedule.'
+      'Data sources are updated automatically on a daily schedule.',
+      'For announcements, updates, and deep dives into the technical concepts, please check the blog of the author: https://riavzon.com/writing'
     ],
     full: {
       title: 'IP Shield Full Documentation',
@@ -109,14 +143,14 @@ export default defineNuxtConfig({
         feed: {
           title: 'IP Shield Blog',
           description: 'Latest articles and updates from IP Shield',
-          id: 'https://ip-shield.com/',
-          link: 'https://ip-shield.com/',
+          id: 'https://ip-shield.riavzon.com/',
+          link: 'https://ip-shield.riavzon.com/',
           language: 'en',
-          favicon: 'https://ip-shield.com/favicon.ico',
+          favicon: 'https://ip-shield.riavzon.com/favicon.ico',
           copyright: `© ${new Date().getFullYear()} IP Shield`,
           author: {
             name: 'IP Shield',
-            link: 'https://ip-shield.com',
+            link: 'https://ip-shield.riavzon.com',
           },
         },
         revisit: '6h',

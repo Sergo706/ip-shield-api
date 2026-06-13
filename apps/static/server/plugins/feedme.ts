@@ -2,7 +2,7 @@ import type { NitroApp } from 'nitropack';
 import type { FeedItem, ContentItemWrapper, FeedEnclosure } from 'nitropack';
 
 export default defineNitroPlugin((nitroApp: NitroApp) => {
-  const baseUrl = (process.env.BASE_URL ?? 'https://ip-shield.com').replace(/\/$/, '');
+  const baseUrl = (process.env.BASE_URL ?? 'https://ip-shield.riavzon.com').replace(/\/$/, '');
 
   const toAbsolute = (url: unknown): unknown => {
     if (typeof url !== 'string' || !url) return url;

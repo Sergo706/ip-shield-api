@@ -6,7 +6,7 @@ const endpoints = [
     id: 'network',
     label: 'Network',
     commands: [
-      '> curl -X GET https://api.ip-shield.com/v1/network/8.8.8.8 \\',
+      '> curl -X GET https://api.ip-shield.riavzon.com/v1/network/8.8.8.8 \\',
       '-H "Authorization: Bearer YOUR_API_KEY"'
     ],
     response: 

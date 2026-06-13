@@ -29,7 +29,7 @@ async function onSubmit() {
       return;
     }
 
-    await $fetch('/api/contact', {
+    await $fetch('/contact', {
       method: 'POST',
       body: {
         ...state.value,

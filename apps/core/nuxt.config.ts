@@ -9,6 +9,9 @@ export default defineNuxtConfig({
     '@nuxtjs/mdc',
     '@vueuse/nuxt',
   ],
+  app: {
+    buildAssetsDir: '/_core/'
+  },
   authH3Client: {
     enableMiddleware: false,
     registerApiRoute: {

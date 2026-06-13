@@ -24,7 +24,7 @@ export default defineAppConfig({
   seo: {
     title: 'Free Geo Location API | Network Data | Proxy & Tor Information | Ip To Location',
     description: 'IP Address Geolocation to Country, City, Region, Latitude, Longitude, ZIP Code, ISP, Domain, Time Zone, Area Code, Tor Network, ASN, Proxy and so on.',
-    url: 'https://ip-shield.com',
+    url: 'https://ip-shield.riavzon.com',
   },
   profile: {
     name: 'IP Shield',
