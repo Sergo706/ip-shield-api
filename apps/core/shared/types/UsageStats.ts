@@ -1,6 +1,7 @@
 export interface UsageStats {
     reqThisMonth: number;
     totalQuota: number;
-    remainingThisMonth: number
-    plan: 'free' | 'pro' | 'custom'
+    remainingThisMonth: number;
+    plan: 'free' | 'pro' | 'custom';
+    requestsPerMinute: number;
 }

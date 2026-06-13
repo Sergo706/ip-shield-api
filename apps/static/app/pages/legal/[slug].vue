@@ -53,29 +53,33 @@ if (import.meta.server) {
   <UPageBody 
     v-if="page"
   >
-    <UPageHeader
-      :title="page.title"
-      :description="page.description"
+    <UContainer
+      class="space-y-16 max-w-6xl"
     >
-      <template #headline>
-        <UBadge 
-          variant="subtle"
-          icon="i-lucide-calendar"
-        >
-          <template #default>
-            <span>Last updated on</span>
-            <NuxtTime
-              :datetime="page.date"
-              year="numeric"
-              month="long"
-              day="numeric"
-            />
-          </template>
-        </UBadge>
-      </template>
-    </UPageHeader>
-    <ContentRenderer
-      :value="page"
-    />
+      <UPageHeader
+        :title="page.title"
+        :description="page.description"
+      >
+        <template #headline>
+          <UBadge 
+            variant="subtle"
+            icon="i-lucide-calendar"
+          >
+            <template #default>
+              <span>Last updated on</span>
+              <NuxtTime
+                :datetime="page.date"
+                year="numeric"
+                month="long"
+                day="numeric"
+              />
+            </template>
+          </UBadge>
+        </template>
+      </UPageHeader>
+      <ContentRenderer
+        :value="page"
+      />
+    </UContainer>
   </UPageBody>
 </template>

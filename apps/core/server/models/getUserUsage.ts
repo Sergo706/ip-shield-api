@@ -12,7 +12,8 @@ export async function getUserUsage(userId: number, log: PinoLogger): Promise<Res
         const [userData] = await dbPool.select({
             requestsUsed: usageRollupMonthly.requestsUsed,
             planQuota: plans.monthlyQuota,
-            planCode: plans.code
+            planCode: plans.code,
+            requestsPerMinute: plans.requestsPerMinute
         })
         .from(subscriptions)
         .innerJoin(plans, eq(subscriptions.planId, plans.id))
@@ -37,7 +38,8 @@ export async function getUserUsage(userId: number, log: PinoLogger): Promise<Res
                 reqThisMonth,
                 totalQuota: userData.planQuota,
                 remainingThisMonth: Math.max(0, userData.planQuota - reqThisMonth),
-                plan: userData.planCode as 'free' | 'pro' | 'custom'
+                plan: userData.planCode as 'free' | 'pro' | 'custom',
+                requestsPerMinute: userData.requestsPerMinute
         };
 
         return {

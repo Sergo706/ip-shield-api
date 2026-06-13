@@ -23,7 +23,13 @@ export const defineQuotaProtectedPublicApi = <T extends EventHandlerRequest, D>(
           reason: 'Unauthorized',
         };
       }
-      const { allowed: allowedToUseQuota, retryAfterMs } = userIdLimiter(token.userId.toString());
+      const planResult = await getCachedUserData(token.userId, log);
+      if (!planResult.ok) {
+         setResponseStatus(event, 400);
+         return { ok: false, date: new Date().toISOString(), reason: planResult.reason };
+      }
+
+      const { allowed: allowedToUseQuota, retryAfterMs } = userIdLimiter(token.userId.toString(), planResult.data.requestsPerMinute);
       
       if (!allowedToUseQuota) {
         setResponseStatus(event, 429);
@@ -31,14 +37,9 @@ export const defineQuotaProtectedPublicApi = <T extends EventHandlerRequest, D>(
         return {
           ok: false,
           date: new Date().toISOString(),
-          reason: 'Too many requests. 50 reqs/second allowed',
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          reason: `Too many requests. ${planResult.data.requestsPerMinute} reqs/minute allowed`,
         };
-      }
-
-      const planResult = await getCachedUserData(token.userId, log);
-      if (!planResult.ok) {
-         setResponseStatus(event, 400);
-         return { ok: false, date: new Date().toISOString(), reason: planResult.reason };
       }
 
       const userPlan = planResult.data.plan;

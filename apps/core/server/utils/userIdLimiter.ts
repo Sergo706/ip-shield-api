@@ -12,8 +12,8 @@ const ipCache = slidingWindowCounterRateLimiter({
    enableBans: true,
 });
 
-export function userIdLimiter(userId: string) {
-  const limiterRes = limiter(userId, 50, 1000);
+export function userIdLimiter(userId: string, limit: number) {
+  const limiterRes = limiter(userId, limit, 1000 * 60);
   return limiterRes;
 }
 
