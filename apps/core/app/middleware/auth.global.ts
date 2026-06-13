@@ -21,7 +21,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (auth.value?.mfaRequired && !auth.value?.authorized) {
       if (isProtectedRoute) {
           return navigateTo({
-            path: '/',
+            path: '/account',
             query: {
               type: 'mfa'
             }
@@ -32,7 +32,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!auth.value?.authorized) {
       if (isProtectedRoute) {
         return navigateTo({
-          path: '/',
+          path: '/account',
           query: {
             type: 'login'
           }
