@@ -95,7 +95,7 @@ COPY docker/healthcheck.js ./healthcheck.js
 
 COPY --from=builder --chown=appuser:appuser /app/apps/core/.output ./.output
 COPY --from=builder --chown=appuser:appuser /app/apps/core/package.json ./package.json
-COPY --chown=appuser:appuser apps/core/data-sources ./data-sources
+RUN mkdir -p ./data-sources && chown appuser:appuser ./data-sources
 
 RUN mkdir -p /home/appuser/.shield-base && \
     echo '{\n  "mmdbctlPath": "mmdbctl",\n  "useragent": "sergey riavzon - contact@riavzon.com",\n  "license": true\n}' > /home/appuser/.shield-base/.cache.json && \

@@ -6,7 +6,7 @@ RUN xcaddy build \
     --with github.com/fabriziosalmi/caddy-mib
 
 
-FROM node:lts-slim AS staticBuild
+FROM node:lts-slim AS staticbuild
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /app
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
@@ -38,7 +38,7 @@ RUN addgroup -S -g 10001 appuser && \
 
 RUN mkdir -p /data /config /home/appuser
 RUN mkdir -p /var/www/static-site
-COPY --from=staticBuild /app/apps/static/.output /var/www/static-site/.output
+COPY --from=staticbuild /app/apps/static/.output /var/www/static-site/.output
 RUN chown -R appuser:appuser /data /config /home/appuser /var/www/static-site
 
 RUN rm -f /usr/bin/wget /usr/bin/curl && \
