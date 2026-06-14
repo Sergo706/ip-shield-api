@@ -1,0 +1,125 @@
+## template: jinja
+#cloud-config
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+groups:
+  - admingroup: [root,sys]
+timezone: UTC
+locale: false
+packages:
+  - git
+  - curl
+  - apt-transport-https
+  - ca-certificates
+  - libatomic1
+  - htop
+  - jq
+  - gnupg
+  - lsb-release
+  - resolvconf
+wireguard: 
+  interfaces:
+    - name: wg0
+      config_path: /etc/wireguard/wg0.conf
+      content: |
+            [Interface]
+            PrivateKey = {{ ds.config.user_wg_key }}
+            Address = {{ ds.config.user_wg_ip }}/32
+            ListenPort = 51820
+            [Peer]
+            PublicKey = JQIvBZQnM6m0a10vtyL4eFkrEXVkhypCszBdgfoFHws=
+            Endpoint = 10.100.102.149:51820
+            AllowedIPs = 10.10.10.10/32
+            PersistentKeepalive = 25
+      readinessprobe:
+          - 'ping -c 3 10.10.10.10'
+users:
+  - name: sergio
+    sudo: "ALL=(ALL:ALL) ALL"
+    groups: admingroup
+    shell: /bin/bash
+    ssh_authorized_keys: 
+        - {{ ds.config.user_ssh_pubkey }}
+  - name: restricteduser
+    groups: []
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - {{ ds.config.user_ssh_pubkey_app }}
+no_ssh_fingerprints: false    
+ssh:
+  emit_keys_to_console: false  
+ssh_pwauth: false
+chpasswd:
+  expire: true
+  users:
+  - {name: sergio, type: text, password: 1234}
+  - {name: restricteduser, type: text, password: 1234}
+write_files:
+  - path: /etc/ssh/sshd_config.d/99-custom-server.conf
+    permissions: '0644'
+    content: |
+      Port 22
+      ListenAddress {{ ds.config.user_wg_ip }}
+      PermitRootLogin no
+      MaxAuthTries 5
+      MaxSessions 3
+      AllowUsers sergio@10.10.10.10 restricteduser@10.10.10.10
+      PubkeyAuthentication yes
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      UsePAM yes
+      X11Forwarding yes
+      PrintMotd no
+      AcceptEnv LANG LC_*
+      Subsystem sftp /usr/lib/openssh/sftp-server
+  - path: /etc/ssh/ssh_config.d/99-custom-client.conf
+    permissions: '0644'
+    content: |
+      Host *
+          SendEnv LANG LC_*
+          HashKnownHosts yes
+          GSSAPIAuthentication yes
+  - path: /etc/ssh/sshd_config.d/70-no-pam-password-auth.conf
+    content: 'KbdInteractiveAuthentication no'
+    permissions: '0644'
+    
+  - path: /etc/ufw/after.rules
+    append: true
+    content: |
+      # ==========================
+      # CUSTOM DOCKER UFW ROUTING
+      # ==========================
+      *filter
+      :ufw-user-forward  - [0:0]
+      :DOCKER-USER - [0:0]
+      -A DOCKER-USER -m conntrack --ctstate ESTABLISHED,RELATED -j RETURN
+      # Send everything into UFWs forward rules first
+      -A DOCKER-USER -j ufw-user-forward
+      # Allow traffic inside the user-defined bridge
+      -A DOCKER-USER -s 172.17.0.0/16 -d 172.17.0.0/16 -j ACCEPT
+      # And if it wasnt allowed there, drop it here
+      -A DOCKER-USER -j DROP
+      COMMIT
+runcmd:
+  - netplan apply
+  - systemctl restart ssh
+  - mkdir -p /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+  - apt-get update -y
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  - systemctl start docker
+  - systemctl enable docker
+  - usermod -aG docker sergio
+  - chmod 750 /home/sergio
+  - chmod 750 /home/restricteduser
+  - su - sergio -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.5/install.sh | bash'
+  - su - sergio -c 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install --lts && nvm use --lts'
+  - ufw default deny incoming && ufw default allow outgoing
+  - ufw allow from 10.10.10.10 proto tcp to any
+  - ufw allow from 10.100.102.149 proto udp to any port 51820
+  - ufw --force enable
+  - ufw reload
+final_message: "The system is up, after $UPTIME seconds"
