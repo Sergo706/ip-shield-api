@@ -1,5 +1,6 @@
 services:
   auth:
+    container_name: ip-shield-auth
     image: sergio68/auth:latest
     pull_policy: if_not_present
     read_only: true  
@@ -28,6 +29,7 @@ services:
       egress: 
         ipv4_address: 173.22.20.2
   dashboard:
+     container_name: ip-shield-dashboard
      build:
       context: .
       dockerfile: ./docker/core/Dockerfile
@@ -79,6 +81,7 @@ services:
       - age_key_app
 
   migrations:
+     container_name: ip-shield-migrations
      profiles: ["cli"]
      build:
       context: .
@@ -123,7 +126,29 @@ services:
       - mysql_password
       - mysql_database
       - age_key_app
+  tunnel:
+    container_name: cloudflared-tunnel
+    pull_policy: never
+    read_only: true  
+    cap_drop: ["ALL"]
+    security_opt: 
+      - "no-new-privileges:true"
+    user: 10001:10001
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=10m,uid=10001,gid=10001
+    build:
+      context: .
+      dockerfile: ./docker/tunnel/Dockerfile
+    restart: unless-stopped
+    networks:
+      frontend:
+        ipv4_address: 173.21.10.6
+    secrets:
+      - age_key_app
+      - tunnel_token
+      
   caddy:
+    container_name: ip-shield-caddy
     build:
       context: .
       dockerfile: ./docker/caddy/Dockerfile
@@ -151,6 +176,7 @@ services:
       frontend:
         ipv4_address: 173.21.10.2
   alloy:
+    container_name: ip-shield-alloy
     image: grafana/alloy:latest
     restart: unless-stopped
     networks:
@@ -174,6 +200,7 @@ services:
       - /sys:/host/sys:ro
       - /:/rootfs:ro
   mysql: 
+    container_name: ip-shield-mysql
     build: 
       context: .
       dockerfile: docker/mysql/Dockerfile
@@ -237,7 +264,9 @@ secrets:
     file: ./secrets/app/env/turnstile.age
   resend_api_key:
     file: ./secrets/app/env/resend_api_key.age
-  
+  tunnel_token:
+    file: ./secrets/app/env/tunnel_token.age
+
 volumes:
   sql_db_ip_shield:  
   app_data:
