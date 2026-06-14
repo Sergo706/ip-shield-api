@@ -12,6 +12,7 @@ RUN curl -fsSL https://github.com/FiloSottile/age/releases/download/v1.2.1/age-v
     tar -xzf /tmp/age.tgz -C /usr/local/bin --strip-components=1 age/age age/age-keygen
 
 FROM mysql:8.0-debian
+LABEL org.opencontainers.image.source="https://github.com/sergo706/ip-shield-api"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nodejs \

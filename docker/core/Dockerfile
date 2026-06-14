@@ -6,6 +6,7 @@ RUN go install filippo.io/age/cmd/...@latest && \
 
 
 FROM node:lts-slim AS base
+LABEL org.opencontainers.image.source="https://github.com/sergo706/ip-shield-api"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \

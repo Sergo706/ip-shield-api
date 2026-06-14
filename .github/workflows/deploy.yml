@@ -1,0 +1,66 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write 
+      contents: read  
+      attestations: write
+      id-token: write
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Log in to gh
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Caddy + Static Site
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/caddy/Dockerfile
+          push: true
+          tags: ghcr.io/sergo706/ip-shield-caddy:latest
+
+      - name: Build and push Core Dashboard
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/core/Dockerfile
+          target: production
+          push: true
+          tags: ghcr.io/sergo706/ip-shield-dashboard:latest
+
+      - name: Build and push Migrations
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/core/Dockerfile
+          target: development
+          push: true
+          tags: ghcr.io/sergo706/ip-shield-migrations:latest
+
+      - name: Build and push Tunnel
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/tunnel/Dockerfile
+          push: true
+          tags: ghcr.io/sergo706/ip-shield-tunnel:latest
+
+      - name: Build and push MySQL
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/mysql/Dockerfile
+          push: true
+          tags: ghcr.io/sergo706/ip-shield-mysql:latest

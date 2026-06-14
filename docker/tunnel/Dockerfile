@@ -1,6 +1,7 @@
 FROM cloudflare/cloudflared:latest AS cloudflared-binary
 
 FROM alpine:latest
+LABEL org.opencontainers.image.source="https://github.com/sergo706/ip-shield-api"
 
 RUN apk add --no-cache age bash
 

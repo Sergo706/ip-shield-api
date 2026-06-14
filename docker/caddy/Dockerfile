@@ -28,6 +28,7 @@ ENV NODE_OPTIONS="--max-old-space-size=8096"
 RUN rm -rf apps/static/.nuxt apps/static/.nitro apps/static/node_modules/.cache/nuxt && pnpm run build:static
 
 FROM caddy:latest
+LABEL org.opencontainers.image.source="https://github.com/sergo706/ip-shield-api"
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
