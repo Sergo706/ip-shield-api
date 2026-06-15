@@ -64,3 +64,19 @@ jobs:
           file: docker/mysql/Dockerfile
           push: true
           tags: ghcr.io/sergo706/ip-shield-mysql:latest
+
+      - name: Build and push Watchtower
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/watchtower/Dockerfile
+          push: true
+          tags: ghcr.io/sergo706/ip-shield-watchtower:latest
+
+      - name: Build and push Alloy
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/alloy/Dockerfile
+          push: true
+          tags: ghcr.io/sergo706/ip-shield-alloy:latest

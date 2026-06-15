@@ -151,6 +151,18 @@ prometheus.remote_write "central" {
   endpoint { url = "http://10.10.10.1:9090/api/v1/write" }
 }
 
+discovery.static "watchtower" {
+  targets = ["watchtower:8080"]
+}
+
+prometheus.scrape "watchtower" {
+  job_name = "watchtower"
+  targets = discovery.static.watchtower.targets
+  scrape_interval = "15s"
+  
+  bearer_token_file = "/tmp/watchtower_token"
+  forward_to = [prometheus.remote_write.central.receiver]
+}
 
 prometheus.exporter.unix "node" {
   procfs_path = "/host/proc"

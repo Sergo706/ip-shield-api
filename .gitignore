@@ -22,4 +22,5 @@ secrets/*.age
 data-sources
 secrets/app/*
 secrets/auth/*
+secrets/watchtower/*
 age_key_app

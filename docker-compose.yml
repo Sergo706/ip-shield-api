@@ -14,6 +14,8 @@ services:
       - email-data:/app/dist/email-db:rw
     tmpfs:
       - /run/app:rw,noexec,nosuid,nodev,uid=10001,gid=10001,size=1m
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     pids_limit: 200
     depends_on:
       mysql:
@@ -48,6 +50,8 @@ services:
       - ./auth-logs/core-app:/app/apps/core/app-logs/:rw
       - data-sources:/app/data-sources:rw
       - data-sources-cache:/home/appuser/.shield-base:rw
+     labels:
+      - "com.centurylinklabs.watchtower.enable=true"
      environment:
       - DB_HOST=mysql
       - DB_PORT=3306
@@ -164,15 +168,17 @@ services:
     cap_add:
     - "NET_BIND_SERVICE"
     user: 10001:10001  
-    ports:
-    - "80:80"
-    - "443:443"
+    # ports:
+    # - "80:80"
+    # - "443:443"
     volumes:
       - ./secrets/caddy:/etc/caddy:ro 
       - caddy_data:/data
       - caddy_config:/config
     tmpfs: 
-      - /tmp:rw,noexec,nosuid,nodev,size=2m,uid=10001,gid=10001,mode=0700    
+      - /tmp:rw,noexec,nosuid,nodev,size=2m,uid=10001,gid=10001,mode=0700
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"    
     depends_on:
       dashboard:
         condition: service_healthy  
@@ -181,7 +187,10 @@ services:
         ipv4_address: 173.21.10.2
   alloy:
     container_name: ip-shield-alloy
-    image: grafana/alloy:latest
+    image: ghcr.io/sergo706/ip-shield-alloy:latest
+    build:
+      context: .
+      dockerfile: docker/alloy/Dockerfile
     restart: unless-stopped
     networks:
       backend:
@@ -189,6 +198,9 @@ services:
       egress:
         ipv4_address: 173.22.20.5
     pid: host
+    secrets:
+      - watchtower_age_key
+      - watchtower_api_token
     volumes:
       - ./config.alloy:/etc/alloy/config.alloy:ro
       - ./auth-logs:/logs/apps:ro
@@ -203,15 +215,37 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
-      # TODO: complete config and age encryption image
   watchtower:
     container_name: watchtower
-    image: containrrr/watchtower
+    image: ghcr.io/sergo706/ip-shield-watchtower:latest
+    build:
+      context: .
+      dockerfile: docker/watchtower/Dockerfile
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/user/.docker/config.json:/config.json:ro 
-    command: --interval 300 --cleanup
+    tmpfs: 
+      - /tmp:rw,noexec,nosuid,nodev,size=2m,uid=10001,gid=10001,mode=0700
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=300
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_REVIVE_STOPPED=true
+      - WATCHTOWER_HTTP_API_METRICS=true
+    secrets:
+      - watchtower_age_key
+      - watchtower_config_json
+      - watchtower_api_token
     restart: unless-stopped
+    security_opt: 
+      - "no-new-privileges:true"
+    read_only: true  
+    cap_drop: ["ALL"]
+    networks:
+      egress:
+        ipv4_address: 173.22.20.15
+      backend:
+        ipv4_address: 173.20.5.15
 
   mysql: 
     container_name: ip-shield-mysql
@@ -281,6 +315,12 @@ secrets:
     file: ./secrets/app/env/resend_api_key.age
   tunnel_token:
     file: ./secrets/app/env/tunnel_token.age
+  watchtower_age_key:
+    file: ./secrets/watchtower/age_key
+  watchtower_config_json:
+    file: ./secrets/watchtower/config.json.age
+  watchtower_api_token:
+    file: ./secrets/watchtower/api_token.age
 
 volumes:
   sql_db_ip_shield:  
