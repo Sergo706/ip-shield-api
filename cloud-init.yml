@@ -106,6 +106,8 @@ write_files:
       -A DOCKER-USER -m conntrack --ctstate ESTABLISHED,RELATED -j RETURN
       # Send everything into UFWs forward rules first
       -A DOCKER-USER -j ufw-user-forward
+      # Allow outbound internet for containers CHANGE TO THE RIGHT Interface (enp5s0)
+      # -A DOCKER-USER -o enp5s0 -j ACCEPT
       # Allow traffic inside the user-defined bridge
       -A DOCKER-USER -s 172.17.0.0/16 -d 172.17.0.0/16 -j ACCEPT
       # And if it wasnt allowed there, drop it here
