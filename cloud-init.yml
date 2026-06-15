@@ -56,9 +56,15 @@ chpasswd:
   users:
   - {name: sergio, type: text, password: 1234}
   - {name: restricteduser, type: text, password: 1234}
+swap:
+  filename: /swapfile
+  size: 4GB
+  maxsize: 4GB
+
 write_files:
   - path: /etc/ssh/sshd_config.d/99-custom-server.conf
     permissions: '0644'
+    owner: root:root
     content: |
       Port 22
       ListenAddress {{ ds.config.user_wg_ip }}
@@ -76,13 +82,16 @@ write_files:
       Subsystem sftp /usr/lib/openssh/sftp-server
   - path: /etc/ssh/ssh_config.d/99-custom-client.conf
     permissions: '0644'
+    owner: root:root
     content: |
       Host *
           SendEnv LANG LC_*
           HashKnownHosts yes
           GSSAPIAuthentication yes
+
   - path: /etc/ssh/sshd_config.d/70-no-pam-password-auth.conf
     content: 'KbdInteractiveAuthentication no'
+    owner: root:root
     permissions: '0644'
     
   - path: /etc/ufw/after.rules
@@ -102,6 +111,15 @@ write_files:
       # And if it wasnt allowed there, drop it here
       -A DOCKER-USER -j DROP
       COMMIT
+
+  - path: /etc/systemd/journald.conf.d/00-journal-size.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+     [Journal]
+     SystemMaxUse=500M
+     SystemKeepFree=1G
+     MaxRetentionSec=30day
 runcmd:
   - netplan apply
   - systemctl restart ssh
