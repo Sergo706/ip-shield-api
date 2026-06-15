@@ -203,6 +203,7 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
+      # TODO: complete config and age encryption image
   watchtower:
     container_name: watchtower
     image: containrrr/watchtower
