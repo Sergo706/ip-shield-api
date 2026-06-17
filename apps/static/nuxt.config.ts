@@ -15,7 +15,7 @@ export default defineNuxtConfig({
     '@nuxt/fonts'
   ],
   turnstile: {
-    siteKey: '0x4AAAAAACi5J_aDDxg04Jkl',
+    siteKey: '0x4AAAAAADmgk9pVpmAk-PAy',
   },
   sourcemap: {
     server: false,

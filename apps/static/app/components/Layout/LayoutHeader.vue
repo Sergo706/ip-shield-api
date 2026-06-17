@@ -43,9 +43,9 @@ const mobileItems = computed<NavigationMenuItem[]>(() => {
   }));
 
   items.push({
-    label: 'GitHub',
-    icon: 'i-lucide-github',
-    to: 'https://github.com/Sergo706/ip-shield-api',
+    label: 'Account',
+    icon: "i-lucide-user",
+    to: '/account',
     target: '_blank',
   });
   
