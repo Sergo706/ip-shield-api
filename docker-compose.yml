@@ -169,6 +169,8 @@ services:
       - "no-new-privileges:true"
     read_only: true  
     cap_drop: ["ALL"]
+    environment:
+      - DOMAIN=ip-shield.riavzon.com
     cap_add:
     - "NET_BIND_SERVICE"
     user: 10001:10001  
@@ -197,6 +199,8 @@ services:
       dockerfile: docker/alloy/Dockerfile
     restart: unless-stopped
     networks:
+      frontend:
+        ipv4_address: 173.21.10.7
       backend:
         ipv4_address: 173.20.5.5
       egress:

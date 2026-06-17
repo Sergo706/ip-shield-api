@@ -158,13 +158,21 @@ prometheus.remote_write "central" {
 prometheus.scrape "watchtower" {
   job_name = "watchtower"
   scrape_interval = "15s"
-  
+  metrics_path = "/v1/metrics"
   targets = [
     { "__address__" = "watchtower:8080" },
   ]
   
   bearer_token_file = "/tmp/watchtower_token"
   forward_to = [prometheus.remote_write.central.receiver]
+}
+prometheus.scrape "caddy" {
+  job_name = "caddy"
+  targets = [
+      { "__address__" = "caddy:2020", "host" = "ip-shield", "instance" = "ip-shield" },
+  ]
+  scrape_interval = "15s"
+  forward_to = [prometheus.remote_write.central.receiver] 
 }
 
 prometheus.exporter.unix "node" {
