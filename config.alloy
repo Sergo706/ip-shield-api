@@ -15,7 +15,7 @@ local.file_match "app_logs" {
 
     // --- DASHBOARD LOGS ---
     { "__path__" = "/logs/apps/core-app/info.log",  log_source = "app-info" },
-    { "__path__" = "/logs/apps/core-app/errors.log",  log_source = "app-errors" },
+    { "__path__" = "/logs/apps/core-app/errors.log", log_source = "app-errors" },
     { "__path__" = "/logs/apps/core-app/warn.log",  log_source = "app-warnings" },
     { "__path__" = "/logs/apps/core-app/http.log",  log_source = "app-http" },
 
@@ -51,12 +51,16 @@ discovery.relabel "docker_logs" {
     target_label  = "host"
     replacement   = "ip-shield"
   }
+  rule {
+    target_label  = "log_source"
+    replacement   = "docker-containers"
+  }
 }
 
 loki.source.docker "docker_scrape" {
   host  = "unix:///var/run/docker.sock"
   targets = discovery.relabel.docker_logs.output
-  forward_to = [loki.write.local_mesh.receiver]
+  forward_to = [loki.process.json_parser.receiver]
 }
 
 discovery.relabel "file_log_targets" {
@@ -71,7 +75,7 @@ loki.process "json_parser" {
   forward_to = [loki.write.local_mesh.receiver]
 
   stage.match {
-    selector = "{log_source=~\"auth-.*|app-.*|bot-.*\"}"
+    selector = "{log_source=~\"auth-.*|app-.*|bot-.*|docker-.*\"}"
     
     stage.json {
       expressions = {
@@ -151,14 +155,13 @@ prometheus.remote_write "central" {
   endpoint { url = "http://10.10.10.1:9090/api/v1/write" }
 }
 
-discovery.static "watchtower" {
-  targets = ["watchtower:8080"]
-}
-
 prometheus.scrape "watchtower" {
   job_name = "watchtower"
-  targets = discovery.static.watchtower.targets
   scrape_interval = "15s"
+  
+  targets = [
+    { "__address__" = "watchtower:8080" },
+  ]
   
   bearer_token_file = "/tmp/watchtower_token"
   forward_to = [prometheus.remote_write.central.receiver]
@@ -182,20 +185,10 @@ discovery.relabel "node_targets" {
     target_label = "instance" 
     replacement  = "ip-shield" 
   }
-  rule { 
-    action = "replace" 
-    target_label = "job" 
-    replacement = "node" 
-  }
-  rule { 
-    action = "replace" 
-    target_label = "source" 
-    replacement = "alloy-frontend" 
-  }
 }
 
 prometheus.scrape "node" {
-  job_name = "node"
+  job_name = "node-exporter"
   targets = discovery.relabel.node_targets.output
   scrape_interval = "7s"
   scrape_timeout  = "6s"
@@ -220,15 +213,10 @@ discovery.relabel "cad_targets" {
     target_label = "instance" 
     replacement  = "ip-shield" 
   }
-  rule { 
-    action = "replace" 
-    target_label = "source" 
-    replacement  = "alloy-frontend" 
-  }
 }
 
 prometheus.scrape "cad" {
-  job_name = "cad-v2"
+  job_name = "cadvisor"
   targets = discovery.relabel.cad_targets.output
   scrape_interval = "7s"
   scrape_timeout  = "6s"

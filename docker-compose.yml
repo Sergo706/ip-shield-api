@@ -42,6 +42,8 @@ services:
      restart: unless-stopped
      cap_drop: ["ALL"] 
      user: 10001:10001
+     group_add:
+       - "999"
      security_opt: 
       - "no-new-privileges:true"
      tmpfs:
@@ -98,6 +100,8 @@ services:
      restart: unless-stopped
      cap_drop: ["ALL"] 
      user: 10001:10001
+     group_add:
+       - "999"
      security_opt: 
       - "no-new-privileges:true"
      pids_limit: 200
@@ -198,6 +202,13 @@ services:
       egress:
         ipv4_address: 173.22.20.5
     pid: host
+    cap_drop: ["ALL"]
+    cap_add:
+      - NET_ADMIN
+    group_add:
+      - "988"
+      - "4"
+      - "10001"
     secrets:
       - watchtower_age_key
       - watchtower_api_token
@@ -218,6 +229,8 @@ services:
   watchtower:
     container_name: watchtower
     image: ghcr.io/sergo706/ip-shield-watchtower:latest
+    group_add:
+    - "988"
     build:
       context: .
       dockerfile: docker/watchtower/Dockerfile
@@ -232,6 +245,7 @@ services:
       - WATCHTOWER_INCLUDE_STOPPED=true
       - WATCHTOWER_REVIVE_STOPPED=true
       - WATCHTOWER_HTTP_API_METRICS=true
+      - DOCKER_API_VERSION=1.40
     secrets:
       - watchtower_age_key
       - watchtower_config_json
@@ -258,10 +272,12 @@ services:
     user: "999:999"
     security_opt: 
       - "no-new-privileges:true"
+    group_add:
+      - "10001"
     volumes:
       - sql_db_ip_shield:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "bash -lc 'exec 3<>/dev/tcp/127.0.0.1/3306'"]
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/127.0.0.1/3306'"]
       interval: 10s
       timeout: 8s 
       retries: 5

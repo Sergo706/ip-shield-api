@@ -89,11 +89,14 @@ export async function convertToEnvs(
       const result = await $`age -d -i ${privateKey} ${file}`.quiet();
       content = result.stdout;
       console.log(`Decrypted directly to memory -> ${envName}`);
-    } catch {
+    } catch (err) {
+      console.error(chalk.red(`Decryption failed for ${file}: ${err}`));
       content = await fs.readFile(file, 'utf8');
-      console.log(`Read unencrypted file -> ${envName}`);
+      console.log(`Read unencrypted file (fallback) -> ${envName}`);
     }
-    process.env[envName] = content.trim();
+    const finalVal = content.trim();
+    console.log(`Debug: ${envName} has length ${finalVal.length}`);
+    process.env[envName] = finalVal;
     if (deleteOnDone) {
       await fs.remove(file);
     }

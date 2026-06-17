@@ -1,5 +1,5 @@
 import { executeDownstream, need } from "./utils";
-import { $ } from 'zx';
+import { $, echo } from 'zx';
 import { encryptAppSecrets, cleanupAppSecrets } from "./crypto"; 
 
 $.verbose = true; 
@@ -10,10 +10,21 @@ console.log("Building images and encrypting secrets...");
 
 await encryptAppSecrets('./secrets/age_key_app', './secrets/app/env');
 await encryptAppSecrets('./secrets/age_key_app', './secrets/app/mysql');
-
 await encryptAppSecrets('./secrets/auth/age_key', './secrets/auth/config.dev.json');
-await encryptAppSecrets('./secrets/watchtower/age_key', './secrets/watchtower/config.json');
+await encryptAppSecrets('./secrets/watchtower/age_key', './secrets/watchtower/config.dev.json');
 await encryptAppSecrets('./secrets/watchtower/age_key', './secrets/watchtower/api_token');
+
+echo("deleting plaintext secrets...");
+await cleanupAppSecrets('./secrets/age_key_app', './secrets/app/env');
+await cleanupAppSecrets('./secrets/age_key_app', './secrets/app/mysql');
+await cleanupAppSecrets('./secrets/auth/age_key', './secrets/auth/config.dev.json');
+await cleanupAppSecrets('./secrets/watchtower/age_key', './secrets/watchtower/config.json');
+await cleanupAppSecrets('./secrets/watchtower/age_key', './secrets/watchtower/api_token');
+
+echo("Setting permissions so Docker can read the secrets...");
+await $`sudo chgrp -R 10001 /home/sergio/src/secrets`
+await $`sudo chgrp -R 999 /home/sergio/src/secrets/app/mysql`
+await $`sudo chmod -R g+rX /home/sergio/src/secrets`
 
 await $`docker compose -f docker-compose.yml build`
 await $`docker compose build migrations`
@@ -25,13 +36,6 @@ console.log("Starting application services...");
 await $`docker compose up -d --force-recreate`
 console.log("Deployment finished successfully!");
 
-console.log("Setting permissions and deleting plaintext secrets...");
-
-await cleanupAppSecrets('./secrets/age_key_app', './secrets/app/env');
-await cleanupAppSecrets('./secrets/age_key_app', './secrets/app/mysql');
-await cleanupAppSecrets('./secrets/auth/age_key', './secrets/auth/config.dev.json');
-await cleanupAppSecrets('./secrets/watchtower/age_key', './secrets/watchtower/config.json');
-await cleanupAppSecrets('./secrets/watchtower/age_key', './secrets/watchtower/api_token');
 
 // add static
 await executeDownstream();

@@ -48,7 +48,7 @@ export async function encryptAppSecrets(privateKeyName: string, secretsPaths: st
     await $`age -a -e -r ${PUBLIC_KEY} -o ${outPath} ${file}`;
   }
   
-  await fs.chmod(privateKeyName, 0o640)
+  await fs.chmod(privateKeyName, 0o644)
   console.log(chalk.green(`All files at ${secretsPaths} is encrypted`))
 } else {
 
@@ -66,7 +66,7 @@ export async function encryptAppSecrets(privateKeyName: string, secretsPaths: st
 
     console.log(`encrypt: ${secretsPaths} -> ${outPath}`)
     await $`age -a -e -r ${PUBLIC_KEY} -o ${outPath} ${secretsPaths}`
-    await fs.chmod(privateKeyName, 0o640)
+    await fs.chmod(privateKeyName, 0o644)
     console.log(chalk.green(`File ${secretsPaths} encrypted to ${outPath}`))
 }
 
@@ -75,7 +75,7 @@ export async function encryptAppSecrets(privateKeyName: string, secretsPaths: st
 export async function cleanupAppSecrets(privateKeyName: string, secretsPaths: string) {
   await need('find')
 
-  try { await fs.chmod(privateKeyName, 0o600) } catch {} 
+  try { await fs.chmod(privateKeyName, 0o640) } catch {} 
 
   if (!await fs.pathExists(secretsPaths)) {
     console.log(chalk.yellow(`Path not found, nothing to clean: ${secretsPaths}`));
