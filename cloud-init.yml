@@ -24,12 +24,12 @@ wireguard:
       config_path: /etc/wireguard/wg0.conf
       content: |
             [Interface]
-            PostUp = iptables -I FORWARD -o %i -m comment --comment "Bypass Docker isolation for outbound VPN" -j ACCEPT
-            PostUp = iptables -I FORWARD -i %i -m comment --comment "Bypass Docker isolation for inbound VPN" -j ACCEPT
+            PostUp = iptables -I DOCKER-USER -o %i -m comment --comment "Bypass Docker isolation for outbound VPN" -j ACCEPT
+            PostUp = iptables -I DOCKER-USER -i %i -m comment --comment "Bypass Docker isolation for inbound VPN" -j ACCEPT
             PostUp = iptables -t nat -I POSTROUTING -o %i -m comment --comment "Masquerade Docker IPs (173.x) to VPN IP" -j MASQUERADE
 
-            PostDown = iptables -D FORWARD -o %i -m comment --comment "Bypass Docker isolation for outbound VPN" -j ACCEPT
-            PostDown = iptables -D FORWARD -i %i -m comment --comment "Bypass Docker isolation for inbound VPN" -j ACCEPT
+            PostDown = iptables -D DOCKER-USER -o %i -m comment --comment "Bypass Docker isolation for outbound VPN" -j ACCEPT
+            PostDown = iptables -D DOCKER-USER -i %i -m comment --comment "Bypass Docker isolation for inbound VPN" -j ACCEPT
             PostDown = iptables -t nat -D POSTROUTING -o %i -m comment --comment "Masquerade Docker IPs (173.x) to VPN IP" -j MASQUERADE
 
             PrivateKey = {{ ds.config.user_wg_key }}
