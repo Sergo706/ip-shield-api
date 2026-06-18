@@ -110,6 +110,7 @@ const ajaxError = ref<string | undefined>('');
 async function onSubmit(payload: FormSubmitEvent<LoginSchema | SignupSchema | ResetPass>) {
   ajaxError.value = '';
   const toast = useToast();
+  console.log(type.value)
 
   if (type.value === 'forgot-password') {
      const res = await onSendAuth(payload, 'forgot-password');

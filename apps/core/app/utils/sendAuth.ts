@@ -85,7 +85,7 @@ export async function onSendAuth(payload: FormSubmitEvent<LoginSchema | SignupSc
             termsConsent: "on",
             rememberUser: "on"
         };
-        const res = await $fetch.raw<PasswordResetResponse>(`/api/auth/password-reset`, {
+        const res = await $fetch.raw<PasswordResetResponse>(`/signup`, {
             method: 'POST',
             body: data,
             headers: {
@@ -184,7 +184,7 @@ export async function onSendAuth(payload: FormSubmitEvent<LoginSchema | SignupSc
                   return {
                         ok: false,
                         date: new Date().toISOString(),
-                        reason: errMsgs
+                        reason: errMSg === "true" ? 'Invalid password or email' : errMSg
                   };   
                 }
             }
