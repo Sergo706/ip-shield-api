@@ -6,13 +6,7 @@ import { onSendAuth } from '~~/app/utils/sendAuth';
 import { useToast } from '#imports';
 
 type FormType = 'login' | 'signup' | 'forgot-password'
-const props = withDefaults(defineProps<{ type?: FormType }>(), {
-  type: 'login'
-});
-
-defineEmits<(e: 'typeChange', type: FormType) => void>();
-
-const type = ref(props.type);
+const type = defineModel<FormType>('type', { default: 'login' });
 
 const emailField: AuthFormField = {
   name: 'email',
@@ -179,7 +173,7 @@ async function onSubmit(payload: FormSubmitEvent<LoginSchema | SignupSchema | Re
         >
           Don't have an account? <ULink
             class="text-primary font-medium cursor-pointer"
-            @click.prevent="$emit('typeChange', 'signup'); type = 'signup'"
+            @click.prevent="type = 'signup'"
           >
             Sign up
           </ULink>
@@ -191,7 +185,7 @@ async function onSubmit(payload: FormSubmitEvent<LoginSchema | SignupSchema | Re
         >
           Already have an account? <ULink
             class="text-primary font-medium cursor-pointer"
-            @click.prevent="$emit('typeChange', 'login'); type = 'login'"
+            @click.prevent="type = 'login'"
           >
             Login
           </ULink>
@@ -203,7 +197,7 @@ async function onSubmit(payload: FormSubmitEvent<LoginSchema | SignupSchema | Re
         >
           Enter your email to reset your password or go back to <ULink
             class="text-primary font-medium cursor-pointer"
-            @click.prevent="$emit('typeChange', 'login'); type = 'login'"
+            @click.prevent="type = 'login'"
           >
             Login
           </ULink>

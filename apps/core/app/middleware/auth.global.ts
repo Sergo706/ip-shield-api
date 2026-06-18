@@ -40,7 +40,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       }
   }
   
-  if (to.path === '/' && auth.value?.authorized) {
+  if (to.path === '/account' && auth.value?.authorized) {
     return navigateTo('/dashboard');
   }
   

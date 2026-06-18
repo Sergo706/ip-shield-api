@@ -87,8 +87,8 @@ importers:
         specifier: 'catalog:'
         version: 1.1.3(@nuxt/scripts@1.2.1(@unhead/vue@2.1.13(vue@3.5.34(typescript@6.0.3)))(db0@0.3.4(better-sqlite3@12.9.0)(drizzle-orm@0.45.2(better-sqlite3@12.9.0)(mysql2@3.22.3(@types/node@25.6.0)))(mysql2@3.22.3(@types/node@25.6.0)))(ioredis@5.10.1)(magicast@0.5.2)(rolldown@1.1.0)(typescript@6.0.3)(vite@7.3.2(@types/node@25.6.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)(yaml@2.8.4))(vue@3.5.34(typescript@6.0.3)))(magicast@0.5.2)
       '@riavzon/auth-h3client':
-        specifier: ^2.0.8
-        version: 2.0.8(8e48d202d9ab164adecf4feb1d319225)
+        specifier: ^2.0.10
+        version: 2.0.10(8e48d202d9ab164adecf4feb1d319225)
       '@riavzon/shield-base':
         specifier: ^3.0.2
         version: 3.0.2
@@ -2783,8 +2783,8 @@ packages:
   '@quansync/fs@1.0.0':
     resolution: {integrity: sha512-4TJ3DFtlf1L5LDMaM6CanJ/0lckGNtJcMjQ1NAV6zDmA0tEHKZtxNKin8EgPaVX1YzljbxckyT2tJrpQKAtngQ==}
 
-  '@riavzon/auth-h3client@2.0.8':
-    resolution: {integrity: sha512-mSEUB6RykA1qN2QAhbKoqjX7vGtbjLr7uXIFv+13mK9jgPlToM3gwB4VleXX1eaPwoGj7p+G+HXG8ztNPiL8Vg==}
+  '@riavzon/auth-h3client@2.0.10':
+    resolution: {integrity: sha512-LErzxVRi6iJnXjXth03582H3LYQp7Kx+/BsWRLOc62DwBr1NY2dWEVbLQq63YEouCHa9onpdG6JnDyocTY8EhA==}
     peerDependencies:
       h3: ^1.15.4 || ^2.0.0-beta.4
       nitropack: ^2.13.1
@@ -11046,7 +11046,7 @@ snapshots:
     dependencies:
       quansync: 1.0.0
 
-  '@riavzon/auth-h3client@2.0.8(8e48d202d9ab164adecf4feb1d319225)':
+  '@riavzon/auth-h3client@2.0.10(8e48d202d9ab164adecf4feb1d319225)':
     dependencies:
       '@nuxt/kit': 4.4.4(magicast@0.5.2)
       file-type: 21.3.0
