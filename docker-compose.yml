@@ -50,7 +50,7 @@ services:
       - /tmp:rw,noexec,nosuid,nodev,uid=10001,gid=10001,size=64m
      volumes:
       - ./auth-logs/core-app:/app/apps/core/app-logs/:rw
-      - data-sources:/app/data-sources:rw
+      - /home/sergio/src/apps/core/data-sources:/app/data-sources:rw
       - data-sources-cache:/home/appuser/.shield-base:rw
      labels:
       - "com.centurylinklabs.watchtower.enable=true"
@@ -60,6 +60,8 @@ services:
       - DOMAIN=localhost
       - CLIENT_LOG_DIR=/app/apps/core/app-logs
       - DATA_SOURCES_DIR=/app/data-sources
+      - NITRO_HOST=0.0.0.0
+      - NODE_ENV=production
      depends_on:
        auth:
          condition: service_healthy
@@ -349,7 +351,6 @@ volumes:
   email-data:
   caddy_data:
   caddy_config:
-  data-sources:
   data-sources-cache:
 networks: 
   backend: 
