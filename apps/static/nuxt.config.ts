@@ -34,7 +34,7 @@ export default defineNuxtConfig({
       autoSubfolderIndex: false,
       crawlLinks: true,
       routes: ['/', '/sitemap.xml', '/feed.xml', '/feed.atom', '/feed.json', '/429'],
-      ignore: ['/account']
+      ignore: ['/account', '/dashboard']
     },
     preset: "static",
   },
