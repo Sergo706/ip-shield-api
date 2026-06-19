@@ -23,6 +23,7 @@ export async function onSendAuth(payload: FormSubmitEvent<LoginSchema | SignupSc
  if (type === 'forgot-password') {
         const res = await $fetch.raw<PasswordResetResponse>(`/api/auth/password-reset`, {
             method: 'POST',
+            credentials: 'include',
             body: payload,
             headers: {
                 ...headers,
@@ -87,6 +88,7 @@ export async function onSendAuth(payload: FormSubmitEvent<LoginSchema | SignupSc
         };
         const res = await $fetch.raw<PasswordResetResponse>(`/signup`, {
             method: 'POST',
+            credentials: 'include',
             body: data,
             headers: {
                 ...headers,
@@ -138,6 +140,7 @@ export async function onSendAuth(payload: FormSubmitEvent<LoginSchema | SignupSc
    else {
         const res = await $fetch.raw<ResponseFromServiceLogin>(`/login`, {
             method: 'POST',
+            credentials: 'include',
             body: payload,
             headers: {
                 ...headers,
@@ -184,7 +187,7 @@ export async function onSendAuth(payload: FormSubmitEvent<LoginSchema | SignupSc
                   return {
                         ok: false,
                         date: new Date().toISOString(),
-                        reason: errMSg === "true" ? 'Invalid password or email' : errMSg
+                        reason: errMSg === "true" ? 'Invalid password or email' : errMsgs
                   };   
                 }
             }

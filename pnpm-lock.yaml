@@ -90,8 +90,8 @@ importers:
         specifier: ^2.0.10
         version: 2.0.10(8e48d202d9ab164adecf4feb1d319225)
       '@riavzon/shield-base':
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^3.0.4
+        version: 3.0.4
       '@riavzon/utils':
         specifier: ^1.3.0
         version: 1.3.0(pino@9.11.0)
@@ -2794,8 +2794,8 @@ packages:
   '@riavzon/json-to-ts@1.1.0':
     resolution: {integrity: sha512-/6pRQp0y7KW7NQtpv9kQOrpxHGbIdLtGmD2Ms9ARWVrHi+jrmLqzWUYPPjv5e45VF+2q6VnMWaMl4qRgsOnKPw==}
 
-  '@riavzon/shield-base@3.0.2':
-    resolution: {integrity: sha512-zzfvpxJMt2i6U93dGqO6Matp83PT8aCKkYmBwQDZikjnqqP2ytWpYpBdg6ynLnnexpsoa5bhXiH1hPs+FN3pUA==}
+  '@riavzon/shield-base@3.0.4':
+    resolution: {integrity: sha512-J3WigIf4LlGe64SXjtr06Bc9/Reoucp9J4Pis8xb/AeSFyMaDe5gNGnSskMYw+J4vT1cKHkgLkS3eHf/BGYssA==}
     hasBin: true
 
   '@riavzon/utils@1.1.6':
@@ -11072,7 +11072,7 @@ snapshots:
 
   '@riavzon/json-to-ts@1.1.0': {}
 
-  '@riavzon/shield-base@3.0.2':
+  '@riavzon/shield-base@3.0.4':
     dependencies:
       '@riavzon/json-to-ts': 1.1.0
       cidr-calc: 1.0.4
