@@ -4,7 +4,7 @@ export function useStats() {
     const headers = useRequestHeaders();
 
     const data = useAsyncData('stats', async () => {
-        const res = await executeRequest<UsageStats>('/stats', 'GET', {}, {}, {}, {event, headers, fetcher});
+        const res = await executeRequest<UsageStats>('/stats-route', 'GET', {}, {}, {}, {event, headers, fetcher});
         if (!res.ok) {
             throw new Error(res.reason || 'Failed to fetch API tokens');
         }
