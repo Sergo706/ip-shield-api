@@ -5,6 +5,8 @@ type: "tos"
 date: 2026-06-13T00:00:00.000Z
 ---
 
+TEST
+
 **Effective Date:** June 13, 2026
 
 Welcome to IP Shield. These Terms of Service ("Terms") govern your access to and use of the IP Shield website, API, and related services (collectively, the "Service") provided by [Sergey Riavzon](https://riavzon.com/) ("we," "us," or "our").

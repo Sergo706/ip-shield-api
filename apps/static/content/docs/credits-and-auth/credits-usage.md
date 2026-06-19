@@ -16,7 +16,7 @@ If you require more usage, even if premium plans are not yet published, please [
 
 ## Viewing Credit Balance
 
-You can view your credit usage in your [Dashboard](https://ip-shield.riavzon.com/account). 
+You can view your credit usage in your [Dashboard](/account){target="_self" external="true"}. 
 
 Additionally, every successful API response includes a `meta` object detailing your current credit limits and the remaining balance.
 

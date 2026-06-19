@@ -10,6 +10,8 @@ cta:
   links:
     - label: Get Started Free
       to: /account
+      external: true
+      target: _self
       icon: i-lucide-rocket
       size: xl
 ---

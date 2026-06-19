@@ -142,7 +142,9 @@ cta:
   description: Get 1,000 free requests per month when you register.
   links:
     - label: Get API Key
-      to: 'https://ip-shield.riavzon.com/account'
+      to: /account
+      external: true
+      target: _self
       color: primary
       size: lg
       icon: i-lucide-arrow-right

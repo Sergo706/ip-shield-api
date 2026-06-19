@@ -20,7 +20,7 @@ const groups = [{
         { label: 'Getting Started', icon: 'i-lucide-rocket', to: '/docs/getting-started' },
         { label: 'API Endpoints', icon: 'i-lucide-plug', to: '/docs/endpoints' },
         { label: 'Blog', icon: 'i-lucide-newspaper', to: '/blog' },
-        { label: 'Account', icon: 'i-lucide-user', to: '/account' },
+        { label: 'Account', icon: 'i-lucide-user', to: '/account', external: true, target: '_self' },
         { label: 'About', icon: 'i-lucide-info', to: '/about' },
     ]
 }];

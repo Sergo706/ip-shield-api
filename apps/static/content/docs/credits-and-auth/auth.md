@@ -4,7 +4,7 @@ description: Learn how to authenticate your API requests using API keys.
 icon: i-lucide-shield-check
 ---
 
-The IP Shield API uses API keys to authenticate requests. You can view and manage your API keys in the [Dashboard](https://ip-shield.riavzon.com/account).
+The IP Shield API uses API keys to authenticate requests. You can view and manage your API keys in the [Dashboard](/account){target="_self" external="true"}.
 
 ---
 

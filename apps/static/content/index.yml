@@ -10,6 +10,8 @@ hero:
     - label: Get API Key
       icon: i-lucide-key
       to: /account
+      external: true
+      target: _self
       size: xl
     - label: View Documentation
       trailingIcon: i-lucide-arrow-right
@@ -34,6 +36,8 @@ sections:
     links:
       - label: Create Free Account
         to: /account
+        external: true
+        target: _self
         icon: i-lucide-rocket
         size: xl
       - label: Read the Docs
@@ -121,6 +125,8 @@ cta:
   links:
     - label: Create Free Account
       to: /account
+      external: true
+      target: _self
       icon: i-lucide-user-plus
       size: xl
     - label: Docs

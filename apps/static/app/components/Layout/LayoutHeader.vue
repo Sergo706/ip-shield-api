@@ -37,6 +37,7 @@ const mobileItems = computed<NavigationMenuItem[]>(() => {
     icon: link.icon,
     to: link.to,
     target: link.to === '/account' ? '_self' : undefined,
+    external: link.to === '/account' ? true : undefined,
     active: link.nested ? route.path.startsWith(link.to) : route.path === link.to,
     children: link.nested ? link.children : []
 
@@ -46,7 +47,8 @@ const mobileItems = computed<NavigationMenuItem[]>(() => {
     label: 'Account',
     icon: "i-lucide-user",
     to: '/account',
-    target: '_blank',
+    target: '_self',
+    external: true,
   });
   
   return items;
@@ -81,7 +83,8 @@ const navigation = computed(() => {
       <UButton
         variant="outline"
         to="/account"
-        target="_blank"
+        target="_self"
+        external
         icon="i-lucide-user"
         aria-label="Account"
         label="Account"
