@@ -10,7 +10,7 @@ export default defineConfig([
     entry: ['./server/scripts/runDbUpdate.ts'],
     dts: false,
     format: ['esm'],
-    output: '.output/server/scripts',
+    outDir: '.output/server/scripts',
     clean: false,
     failOnWarn: true,
   },

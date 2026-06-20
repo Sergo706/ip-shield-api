@@ -8,7 +8,7 @@ export default defineNitroPlugin((nitroApp) => {
   const dataSchedule = Number(process.env.DATA_RESET_SCHEDULE) || 1000 * 60 * 60 * 24;
   const scriptPath = isDev 
     ? resolve(process.cwd(), 'server/scripts/runDbUpdate.ts')
-    : resolve(process.cwd(), '.output/server/scripts/runDbUpdate.js'); 
+    : resolve(process.cwd(), '.output/server/scripts/runDbUpdate.mjs'); 
   
   const cmd = isDev ? 'npx' : 'node';
   const args = isDev ? ['tsx', scriptPath] : [scriptPath];
