@@ -16,7 +16,7 @@ export async function populatePlans() {
                 monthlyQuota: 1000,
                 features: {
                     bulkLookup: false,
-                    apiKeyLimit: 1,
+                    apiKeyLimit: 20,
                     supportIncluded: false,
                     freeDescription: 'Free forever',
                     customDatasets: 0,
@@ -32,7 +32,7 @@ export async function populatePlans() {
                 monthlyQuota: 3000,
                 features: {
                     bulkLookup: true,
-                    apiKeyLimit: 3,
+                    apiKeyLimit: 20,
                     supportIncluded: true,
                     freeDescription: 'More generous limits',
                     customDatasets: 1,

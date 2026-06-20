@@ -72,8 +72,8 @@ sections:
           custom: true
       - title: 'API Keys'
         tiers:
-          free: 1
-          pro: 3
+          free: 20
+          pro: 20
           custom: 'Contact us'
       - title: 'Support'
         tiers:

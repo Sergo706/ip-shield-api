@@ -93,7 +93,8 @@ export default defineContentConfig({
       },
       schema: z.object({
         type: z.enum(['tos', 'privacy']),
-        date: z.date()
+        date: z.date(),
+        rawbody: z.string().optional()
       })
     }),
 
@@ -124,7 +125,8 @@ export default defineContentConfig({
             orientation: orientationEnum.optional(),
             reverse: z.boolean().optional(),
             features: z.array(createFeatureItemSchema()).optional(),
-            links: z.array(createLinkSchema()).optional()
+            links: z.array(createLinkSchema()).optional(),
+            rawbody: z.string().optional()
           })
         ).optional(),
 
