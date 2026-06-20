@@ -54,7 +54,12 @@ export default defineNuxtConfig({
     '/': { prerender: false },
     '/api/v1/**': {
       cors: true,
-      headers: { 'access-control-allow-methods': 'GET' },
+      headers: { 
+        'access-control-allow-origin': '*',
+        'access-control-allow-methods': 'GET, OPTIONS',
+        'access-control-allow-headers': 'x-api-key, Content-Type, Accept',
+        'access-control-max-age': '86400',
+      },
       cache: false,
     }
   },
