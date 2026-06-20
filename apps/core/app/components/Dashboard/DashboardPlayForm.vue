@@ -64,7 +64,7 @@ function onSubmit() {
         name="input"
         :ui="{ description: 'font-mono text-xs' }"
       >
-        <div class="flex gap-2 w-full">
+        <div class="flex flex-col sm:flex-row gap-2 w-full">
           <UInputMenu
             v-model="endpoint"
             :items="items"
@@ -73,7 +73,7 @@ function onSubmit() {
             icon="i-lucide-route"
             :loading="loading"
             :disabled="loading"
-            class="w-52 shrink-0"
+            :ui="{ root: 'w-full sm:w-52 shrink-0' }"
           />
 
           <UInput
@@ -81,7 +81,7 @@ function onSubmit() {
             :icon="selected?.icon"
             :placeholder="selected?.placeholder"
             :type="selected?.inputType === 'email' ? 'email' : 'text'"
-            class="flex-1"
+            class="w-full sm:flex-1 min-w-0"
             :disabled="loading"
             :ui="{ base: 'font-mono' }"
             @keyup.enter="$emit('check', state.input, endpoint)"
@@ -92,6 +92,7 @@ function onSubmit() {
             icon="i-lucide-send"
             label="Send"
             color="primary"
+            class="w-full sm:w-auto justify-center"
             :loading="loading"
             :disabled="!state.input || !endpoint"
           />
