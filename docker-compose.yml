@@ -80,7 +80,7 @@ services:
       - oauth_github_client_secret
       - oauth_google_client_id
       - oauth_google_client_secret
-      - turnstile
+      - nuxt_turnstile_secret_key
       - resend_api_key
       - mysql_user
       - mysql_password
@@ -130,7 +130,7 @@ services:
       - oauth_github_client_secret
       - oauth_google_client_id
       - oauth_google_client_secret
-      - turnstile
+      - nuxt_turnstile_secret_key
       - resend_api_key
       - mysql_user
       - mysql_password
@@ -329,8 +329,8 @@ secrets:
     file: ./secrets/app/env/oauth_google_client_id.age
   oauth_google_client_secret:
     file: ./secrets/app/env/oauth_google_client_secret.age
-  turnstile:
-    file: ./secrets/app/env/turnstile.age
+  nuxt_turnstile_secret_key:
+    file: ./secrets/app/env/nuxt_turnstile_secret_key.age
   resend_api_key:
     file: ./secrets/app/env/resend_api_key.age
   tunnel_token:

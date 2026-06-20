@@ -43,11 +43,25 @@ export default defineEventHandler(async (event) => {
     };
   }
 
-  const turnstileSecret = env.NUXT_TURNSTILE_SECRET_KEY;
+  const turnstileSecretVar = env.NUXT_TURNSTILE_SECRET_KEY;
   const resendApiKey = env.RESEND_API_KEY;
 
-  if (!turnstileSecret || !resendApiKey) {
-    log.error('Missing Envs');
+  const config = useRuntimeConfig(event);
+  const turnstileSecret = config.turnstile.secretKey;
+
+  if (!turnstileSecret || !turnstileSecretVar) {
+    log.error('Missing Turnstile Secret');
+    setResponseStatus(event, 500);
+    return {
+        ok: false,
+        date: new Date().toISOString(),
+        reason: 'Server Error'
+    };
+  }
+
+
+  if (!resendApiKey) {
+    log.error('Missing Resend API Key');
     setResponseStatus(event, 500);
     return {
         ok: false,

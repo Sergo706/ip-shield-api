@@ -12,6 +12,9 @@ export default defineNuxtConfig({
   app: {
     buildAssetsDir: '/_core/'
   },
+  turnstile: {
+    siteKey: '0x4AAAAAADmgk9pVpmAk-PAy',
+  },
   runtimeConfig: {
     turnstile: {
       secretKey: '',

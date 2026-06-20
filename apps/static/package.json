@@ -22,7 +22,8 @@
     "nuxt": "catalog:",
     "tailwindcss": "catalog:",
     "ufo": "^1.6.4",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "@nuxt/scripts": "catalog:"
   },
   "devDependencies": {
     "@iconify-json/lucide": "1.2.104",
