@@ -47,7 +47,7 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/': { prerender: false },
-    'api/v1/**': {
+    '/api/v1/**': {
       cors: true,
       headers: { 'access-control-allow-methods': 'GET' },
       cache: false,
