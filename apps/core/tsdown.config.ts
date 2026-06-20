@@ -13,5 +13,8 @@ export default defineConfig([
     outDir: '.output/server/scripts',
     clean: false,
     failOnWarn: true,
+    deps: {
+      alwaysBundle: [/@riavzon/]
+    }
   },
 ])
