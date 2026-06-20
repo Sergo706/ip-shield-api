@@ -23,6 +23,9 @@ await cleanupAppSecrets('./secrets/watchtower/age_key', './secrets/watchtower/ap
 
 echo("Setting permissions so Docker can read the secrets...");
 await $`sudo chgrp -R 10001 /home/sergio/src/secrets`
+await $`mkdir -p /home/sergio/src/auth-logs/server/bot-detector`
+await $`mkdir -p /home/sergio/src/auth-logs/core-app`
+await $`sudo chown -R 10001:10001 /home/sergio/src/auth-logs`
 await $`sudo chgrp -R 999 /home/sergio/src/secrets/app/mysql`
 await $`sudo chmod -R g+rX /home/sergio/src/secrets`
 
