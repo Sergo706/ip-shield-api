@@ -6,7 +6,7 @@ import { limitBytes} from '@riavzon/auth-h3client';
 import {  validateZodSchema } from '@riavzon/utils';
 
 const contactEnv = z.object({
-  TURNSTILE: z.string(),
+  NUXT_TURNSTILE_SECRET_KEY: z.string(),
   RESEND_API_KEY: z.string(),
 });
 
@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
     };
   }
 
-  const turnstileSecret = env.TURNSTILE;
+  const turnstileSecret = env.NUXT_TURNSTILE_SECRET_KEY;
   const resendApiKey = env.RESEND_API_KEY;
 
   if (!turnstileSecret || !resendApiKey) {

@@ -14,7 +14,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     turnstile: {
-      secretKey: process.env.TURNSTILE,
+      secretKey: '',
     }
   },
   authH3Client: {
