@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
   const resendApiKey = env.RESEND_API_KEY;
 
   const config = useRuntimeConfig(event);
-  const turnstileSecret = config.turnstile.secretKey;
+  const turnstileSecret = config.turnstile.secretKey as string | undefined;
 
   if (!turnstileSecret || !turnstileSecretVar) {
     log.error('Missing Turnstile Secret');
