@@ -35,6 +35,7 @@ export default defineEventHandler(async (event) => {
 
   if (!token) {
     setResponseStatus(event, 400);
+    log.info(`Rejected contact form Captcha token is required`);
     return {
         ok: false,
         date: new Date().toISOString(),
@@ -77,7 +78,7 @@ export default defineEventHandler(async (event) => {
     <h3>Message:</h3>
     <p>${message ?? ''}</p>
   `;
-  console.log('Attempting to send email via Resend...');
+
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -108,12 +109,12 @@ export default defineEventHandler(async (event) => {
 
     log.info(`Email sent successfully! ID: ${data.id ?? ''}`);
     return { 
-      ok: false,
+      ok: true,
       date: new Date().toISOString(), 
       data: 'Successfully submitted!' 
     };
   } catch (err: unknown) {
-    log.error({ err}, 'FATAL SERVER ERROR IN CONTACT API:');
+    log.error({ err}, 'FATAL SERVER ERROR IN CONTACT API');
     setResponseStatus(event, 500);
       return {
         ok: false,

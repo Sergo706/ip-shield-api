@@ -12,6 +12,11 @@ export default defineNuxtConfig({
   app: {
     buildAssetsDir: '/_core/'
   },
+  runtimeConfig: {
+    turnstile: {
+      secretKey: process.env.TURNSTILE,
+    }
+  },
   authH3Client: {
     enableMiddleware: false,
     registerApiRoute: {
