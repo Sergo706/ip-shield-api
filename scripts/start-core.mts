@@ -33,7 +33,7 @@ await $`docker compose -f docker-compose.yml build`
 await $`docker compose build migrations`
 
 console.log("Running database migrations...");
-await $`docker compose run --rm migrations sh -c "pnpm --filter @app/core migrate && pnpm --filter @app/core seed:plans"`
+await $`docker compose run --rm migrations sh -c "pnpm --filter @app/core migrate && pnpm --filter @app/core seed:live"`
 
 console.log("Starting application services...");
 await $`docker compose up -d --force-recreate`

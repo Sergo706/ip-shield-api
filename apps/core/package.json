@@ -8,6 +8,7 @@
     "preview": "nuxt preview",
     "prepare": "nuxt prepare",
     "seed:plans": "npx tsx --env-file=.env ./lib/db/seedPlans.ts",
+    "seed:live": "npx tsx ./lib/db/seedPlans.ts",
     "migrate": "drizzle-kit generate && drizzle-kit push",
     "lint": "eslint .",
     "typecheck": "nuxt typecheck"
