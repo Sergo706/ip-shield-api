@@ -17,8 +17,8 @@ const groups = [{
     label: 'Explore',
     slot: 'links' as const,
     items: [
-        { label: 'Getting Started', icon: 'i-lucide-rocket', to: '/docs/getting-started' },
-        { label: 'API Endpoints', icon: 'i-lucide-plug', to: '/docs/endpoints' },
+        { label: 'Getting Started', icon: 'i-lucide-rocket', to: '/docs' },
+        { label: 'API Endpoints', icon: 'i-lucide-plug', to: '/docs/endpoints/email-domain-check' },
         { label: 'Blog', icon: 'i-lucide-newspaper', to: '/blog' },
         { label: 'Account', icon: 'i-lucide-user', to: '/account', external: true, target: '_self' },
         { label: 'About', icon: 'i-lucide-info', to: '/about' },

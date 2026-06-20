@@ -60,6 +60,7 @@ services:
       - DATA_SOURCES_DIR=/app/data-sources
       - NITRO_HOST=0.0.0.0
       - NODE_ENV=production
+      - DATA_RESET_SCHEDULE=10800000
      depends_on:
        auth:
          condition: service_healthy
