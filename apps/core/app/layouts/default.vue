@@ -34,6 +34,7 @@
         <NuxtLink
           to="https://riavzon.com"
           target="_blank"
+          :external="true"
         >
           Riavzon
         </NuxtLink> • © {{ new Date().getFullYear() }}

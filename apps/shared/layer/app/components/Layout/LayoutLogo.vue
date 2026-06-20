@@ -13,6 +13,7 @@ defineProps({
 <template>
   <NuxtLink
     to="/"
+    :external="true"
     class="flex shrink-0 items-center"
     aria-label="Go back to home page"
   >
