@@ -11,7 +11,7 @@ The Network API retrieves deep network intelligence for any IPv4 or IPv6 address
 ## Endpoint
 
 ```bash [Terminal]
-curl -X GET "https://api.ip-shield.riavzon.com/api/v1/network/8.8.8.8" \
+curl -X GET "https://ip-shield.riavzon.com/api/v1/network/8.8.8.8" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 

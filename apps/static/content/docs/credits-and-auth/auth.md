@@ -36,7 +36,7 @@ Revoking an API key immediately and permanently invalidates it. Any systems or a
 Authentication to the API is performed via the `x-api-key` header. When making a request, you must include your API key using the `x-api-key` HTTP header.
 
 ```bash [Terminal]
-curl -X GET "https://api.ip-shield.riavzon.com/api/v1/network/8.8.8.8" \
+curl -X GET "https://ip-shield.riavzon.com/api/v1/network/8.8.8.8" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 

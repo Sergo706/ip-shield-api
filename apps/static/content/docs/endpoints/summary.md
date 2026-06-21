@@ -11,7 +11,7 @@ The Summary API is our most comprehensive endpoint. It executes multiple databas
 ## Endpoint
 
 ```bash [Terminal]
-curl -X GET "https://api.ip-shield.riavzon.com/api/v1/summary/1.1.1.1" \
+curl -X GET "https://ip-shield.riavzon.com/api/v1/summary/1.1.1.1" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 

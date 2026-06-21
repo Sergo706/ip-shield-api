@@ -11,7 +11,7 @@ The Lookup IP API provides a intelligence profile for any IP address. The endpoi
 ## Endpoint
 
 ```bash [Terminal]
-curl -X GET "https://api.ip-shield.riavzon.com/api/v1/lookup/ip/93.184.216.34" \
+curl -X GET "https://ip-shield.riavzon.com/api/v1/lookup/ip/93.184.216.34" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 

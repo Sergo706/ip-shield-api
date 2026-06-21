@@ -285,7 +285,7 @@ export default {
 
     try {
       // Make a subrequest to the IP Shield API
-      const shieldResponse = await fetch(`https://api.ip-shield.riavzon.com/v1/network/${clientIP}`, {
+      const shieldResponse = await fetch(`https://ip-shield.riavzon.com/v1/network/${clientIP}`, {
         headers: {
           'Authorization': `Bearer ${env.IP_SHIELD_API_KEY}`
         }

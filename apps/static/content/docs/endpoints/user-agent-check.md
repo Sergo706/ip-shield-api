@@ -11,7 +11,7 @@ The User Agent Check API parses raw HTTP `User-Agent` headers against a database
 ## Endpoint
 
 ```bash [Terminal]
-curl -X GET "https://api.ip-shield.riavzon.com/api/v1/check/user-agent/Nmap%20Scripting%20Engine%207.92" \
+curl -X GET "https://ip-shield.riavzon.com/api/v1/check/user-agent/Nmap%20Scripting%20Engine%207.92" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 

@@ -11,7 +11,7 @@ The Geo Check API provides granular, city-level geographic mapping for an IPv4 o
 ## Endpoint
 
 ```bash [Terminal]
-curl -X GET "https://api.ip-shield.riavzon.com/api/v1/check/geo/8.8.8.8" \
+curl -X GET "https://ip-shield.riavzon.com/api/v1/check/geo/8.8.8.8" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 

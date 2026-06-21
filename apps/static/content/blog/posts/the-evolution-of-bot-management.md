@@ -198,7 +198,7 @@ async def verify_bot_traffic(request: Request):
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
-                "https://api.ip-shield.riavzon.com/v1/check/bot",
+                "https://ip-shield.riavzon.com/v1/check/bot",
                 json={"ip": client_ip, "userAgent": user_agent},
                 headers={"Authorization": f"Bearer {IP_SHIELD_API_KEY}"},
                 timeout=2.0

@@ -13,7 +13,7 @@ Disposable emails (also known as "burner" or "10-minute" emails) are frequently 
 ## Endpoint
 
 ```bash [Terminal]
-curl -X GET "https://api.ip-shield.riavzon.com/api/v1/check/email-domain/user@10minutemail.com" \
+curl -X GET "https://ip-shield.riavzon.com/api/v1/check/email-domain/user@10minutemail.com" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 
