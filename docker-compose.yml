@@ -60,7 +60,7 @@ services:
       - DATA_SOURCES_DIR=/app/data-sources
       - NITRO_HOST=0.0.0.0
       - NODE_ENV=production
-      - DATA_RESET_SCHEDULE=60000
+      - DATA_RESET_SCHEDULE=86400000
      depends_on:
        auth:
          condition: service_healthy
@@ -373,3 +373,4 @@ networks:
       config:
         - subnet: 173.22.20.0/24
           gateway: 173.22.20.1
+          # keys_413dba94e2061e940768cde5841a6728c2492b4f02f3d48079c149c22a1b6cfce40ae47503f296be4b5df63b741970b7e33c9d2ce8e635f11621a3cfbae2d611_74a5ff83
