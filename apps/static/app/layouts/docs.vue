@@ -122,7 +122,7 @@ const surround = computed(() => surroundData.value ?? []);
         <template #links>
           <LayoutActionsDropdown
             :content="page?.rawbody || page?.description || ''"
-            :md-url="`https://raw.githubusercontent.com/Sergo706/solana-bots/main/web/content/${page?.stem ?? ''}.md`"
+            :md-url="`/raw/${page?.stem ?? ''}.md`"
           />
         </template>
       </UPageHeader>
