@@ -138,7 +138,7 @@ function getRowItems(tokenId: number) {
         const modal = overlay.create(AuthApiModal);
         const instance = modal.open({
           title: 'Token Rotation',
-          msg: `You sure you want to proceed? the old couldn't be used after this point, and the new one will have the settings the old want did.`,
+          msg: `You sure you want to proceed? the old token couldn't be used after this point, and the new one will have the settings the old one did.`,
           action: 'rotate',
           tokenId
         }); 
