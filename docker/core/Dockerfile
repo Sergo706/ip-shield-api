@@ -98,7 +98,7 @@ COPY --from=builder --chown=appuser:appuser /app/apps/core/package.json ./packag
 RUN mkdir -p ./data-sources && chown appuser:appuser ./data-sources
 
 RUN mkdir -p /home/appuser/.shield-base && \
-    echo '{\n  "mmdbctlPath": "mmdbctl",\n  "useragent": "sergey riavzon - contact@riavzon.com",\n  "license": true\n}' > /home/appuser/.shield-base/.cache.json && \
+    echo '{ "mmdbctlPath": "mmdbctl", "useragent": "sergey riavzon - contact@riavzon.com", "license": true }' > /home/appuser/.shield-base/.cache.json && \
     chown -R appuser:appuser /home/appuser/.shield-base
 
 USER appuser
