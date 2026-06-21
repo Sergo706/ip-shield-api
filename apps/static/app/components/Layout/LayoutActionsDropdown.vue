@@ -9,7 +9,7 @@ const props = defineProps<{
 
 const copyText = useCopy();
 const route = useRoute();
-const currentUrl = computed(() => `https://docs.riavzon.com${route.path}`);
+const currentUrl = computed(() => `https://ip-shield.riavzon.com${route.path}`);
 
 
 const items = computed<DropdownMenuItem[]>(() => [
