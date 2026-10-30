@@ -584,9 +584,5 @@ Licensed under the Apache License, Version 2.0.
 
 The **code** is Apache 2.0. The **datasets** are not covered by that licence, and some
 carry their own terms.
-Before redistributing anything from `data-sources/`, check the
-upstream licence for each source: the FireHOL blocklists are GPL-family, RIR geofeeds
-have per-registry terms of use, and Tor exit lists are effectively public data but are
-often redistributed under a specific attribution requirement. Threat actors harvested
-by [bot-detection](https://docs.riavzon.com/docs/bot-detection) are data I generated, so
-those are yours to use as you see fit.
+
+Check [shield-base](https://github.com/Sergo706/shield-base-cli) for more.
