@@ -545,8 +545,7 @@ pulled.
 `watchtower` polls every 300 s (`WATCHTOWER_POLL_INTERVAL`) and acts on containers
 labelled `com.centurylinklabs.watchtower.enable=true` (`dashboard`, `caddy`).
 `WATCHTOWER_REVIVE_STOPPED=true` means a container that crashed will be restarted by
-the updater. For a production deployment I would pin image digests and drop that flag —
-auto-pulling `:latest` is a supply-chain risk, and it will fight you while debugging.
+the updater.
 
 ### 12. Refresh interval
 
